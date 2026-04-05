@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>일본어 문법 연습</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: "Hiragino Kaku Gothic Pro", "Noto Sans JP", "Yu Gothic", sans-serif;
+    background: #f5f0eb;
+    color: #2c2c2c;
+    padding: 1.5rem 2.5rem 2.5rem;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+
+  /* Tabs */
+  .tab-bar {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 1.2rem;
+    flex-shrink: 0;
+    border-bottom: 1px solid #c9bfb4;
+  }
+
+  .tab {
+    padding: 0.5rem 3.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: none;
+    text-align: center;
+    color: #999;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .tab.active { color: #2c2c2c; border-bottom-color: #2c2c2c; }
+  .tab:not(.active):hover { color: #666; }
+
+  .tab-content { display: none; flex: 1; min-height: 0; flex-direction: column; }
+  .tab-content.active { display: flex; }
+
+  /* Reference tables */
+  .ref-container {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    overflow: hidden;
+  }
+
+  .ref-col-left {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .ref-col-right {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  .ref-section {
+    flex-shrink: 0;
+    margin-bottom: 1rem;
+  }
+
+  .ref-section h2 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 2px solid #2c2c2c;
+  }
+
+  .ref-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.7rem;
+  }
+
+  .ref-table th {
+    background: #e8ddd3;
+    padding: 0.25rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.6rem;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .ref-table td {
+    padding: 0.25rem 1rem;
+    white-space: nowrap;
+    border-bottom: 1px solid #e0d8d0;
+    vertical-align: middle;
+    line-height: 1.3;
+  }
+
+  .ref-table tr:hover td { background: #f0ebe5; }
+
+  .ref-table .particle-cell {
+    font-size: 1rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .ref-table .korean-cell {
+    font-weight: 500;
+    font-size: 0.65rem;
+  }
+
+  .ref-table .example-cell {
+    white-space: nowrap;
+  }
+
+  .ref-table .translation-cell {
+    font-size: 0.65rem;
+    color: #555;
+    white-space: nowrap;
+  }
+
+  ruby { ruby-position: over; }
+  rt { font-size: 0.55em; color: #888; }
+
+  /* Quiz */
+  .quiz-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  .quiz-setup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.3rem;
+    max-height: 100%;
+    overflow-y: auto;
+    padding: 0.5rem;
+  }
+
+  .quiz-setup > h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  .setting-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .setting-group-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  .setting-row {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .setting-row label {
+    min-width: 140px;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .setting-row input[type="range"] {
+    width: 140px;
+    accent-color: #2c2c2c;
+  }
+
+  .setting-row .val {
+    min-width: 36px;
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .toggle-group {
+    display: flex;
+    gap: 0;
+  }
+
+  .toggle-btn {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid #2c2c2c;
+    background: #fff;
+    color: #2c2c2c;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .toggle-btn:first-child { border-radius: 6px 0 0 6px; }
+  .toggle-btn:last-child { border-radius: 0 6px 6px 0; border-left: none; }
+  .toggle-btn:not(:first-child):not(:last-child) { border-left: none; }
+  .toggle-btn.active { background: #2c2c2c; color: #fff; }
+  .toggle-btn:not(.active):hover { background: #e8ddd3; }
+
+  button.start-btn {
+    margin-top: 0.5rem;
+    padding: 0.6rem 2.5rem;
+    font-size: 1rem;
+    background: #2c2c2c;
+    color: #fff;
+    border: 2px solid #2c2c2c;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  button.start-btn:hover { background: #444; }
+
+  /* Active quiz */
+  .quiz-active {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .quiz-progress {
+    font-size: 0.85rem;
+    color: #888;
+    font-weight: 600;
+  }
+
+  .quiz-sentence {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    text-align: center;
+    line-height: 2;
+    min-height: 3rem;
+  }
+
+  .quiz-sentence .blank {
+    display: inline-block;
+    min-width: 3em;
+    border-bottom: 3px solid #2c2c2c;
+    margin: 0 0.2em;
+  }
+
+  .quiz-korean {
+    font-size: 1.1rem;
+    color: #666;
+    text-align: center;
+  }
+
+  .timer-bar-track {
+    width: 100%;
+    height: 6px;
+    background: #ddd;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .timer-bar {
+    height: 100%;
+    background: #2c2c2c;
+    border-radius: 3px;
+    transition: width 0.1s linear;
+  }
+
+  .timer-bar.warning { background: #c44; }
+
+  .timer-text {
+    font-size: 0.8rem;
+    color: #888;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .quiz-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .choice-btn {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid #c9bfb4;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .choice-btn:hover { border-color: #2c2c2c; }
+  .choice-btn.correct { background: #e8f0e8; border-color: #3a8a3a; }
+  .choice-btn.wrong { background: #fdf0f0; border-color: #c44; }
+
+  .quiz-input {
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border: 2px solid #c9bfb4;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    max-width: 360px;
+    outline: none;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+
+  .quiz-input:focus { border-color: #2c2c2c; }
+
+  .quiz-feedback {
+    font-size: 0.9rem;
+    font-weight: 600;
+    min-height: 1.6rem;
+    text-align: center;
+    max-width: 400px;
+    line-height: 1.5;
+  }
+
+  .quiz-feedback.correct { color: #3a8a3a; }
+  .quiz-feedback.wrong { color: #c44; }
+
+  .quiz-feedback .explanation {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #666;
+    margin-top: 0.3rem;
+  }
+
+  .quiz-feedback .romaji-hint {
+    display: block;
+    font-size: 0.75rem;
+    color: #999;
+    margin-top: 0.15rem;
+  }
+
+  .next-btn {
+    padding: 0.4rem 2rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 2px solid #2c2c2c;
+    border-radius: 6px;
+    background: #2c2c2c;
+    color: #fff;
+    cursor: pointer;
+    display: none;
+  }
+
+  .next-btn:hover { background: #444; }
+
+  /* Results */
+  .quiz-results {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    width: 100%;
+    max-width: 560px;
+    max-height: 100%;
+    min-height: 0;
+  }
+
+  .quiz-score {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .quiz-score .pct { font-size: 1rem; color: #888; font-weight: 500; }
+
+  .results-list {
+    width: 100%;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    border: 1px solid #c9bfb4;
+    border-radius: 8px;
+  }
+
+  .results-list table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .results-list th {
+    position: sticky;
+    top: 0;
+    background: #e8ddd3;
+    padding: 0.35rem 0.4rem;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.7rem;
+  }
+
+  .results-list td {
+    padding: 0.3rem 0.4rem;
+    text-align: center;
+    border-top: 1px solid #eee;
+  }
+
+  .results-list tr.correct-row td { background: #f0f8f0; }
+  .results-list tr.wrong-row td { background: #fdf0f0; }
+
+  .results-btns {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .results-btns button {
+    padding: 0.4rem 1.2rem;
+    font-size: 0.85rem;
+    border: 2px solid #2c2c2c;
+    border-radius: 6px;
+    background: #fff;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .results-btns button:hover { background: #2c2c2c; color: #fff; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 600px) {
+    body { padding: 1rem 1rem 1.5rem; overflow: auto; height: auto; min-height: 100vh; }
+    .ref-container { display: flex; flex-direction: column; overflow: visible; gap: 0.5rem; }
+    .ref-col-left, .ref-col-right { overflow: visible; }
+    .ref-table { font-size: 0.7rem; }
+    .ref-table .particle-cell { font-size: 1rem; width: 40px; }
+    .quiz-sentence { font-size: 1.1rem; }
+    .tab { padding: 0.5rem 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>일본어 문법 연습</h1>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab('ref')">テーブル</div>
+  <div class="tab" onclick="switchTab('quiz')">クイズ</div>
+</div>
+
+<div class="tab-content active" id="tab-ref">
+  <div class="ref-container" id="ref-container"></div>
+</div>
+
+<div class="tab-content" id="tab-quiz">
+  <div class="quiz-panel">
+
+    <div class="quiz-setup" id="quiz-setup">
+      <h2>クイズ設定 (Quiz Settings)</h2>
+
+      <div class="setting-group">
+        <div class="setting-group-title">問題タイプ (Question Type)</div>
+        <div class="toggle-group" id="qtype-toggle">
+          <div class="toggle-btn active" onclick="setToggle('qtype','fillin')">穴埋め (Fill-in)</div>
+          <div class="toggle-btn" onclick="setToggle('qtype','translate')">翻訳 (Translation)</div>
+          <div class="toggle-btn" onclick="setToggle('qtype','both')">両方 (Both)</div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-group-title">出題範囲 (Scope)</div>
+        <div class="toggle-group" id="scope-toggle">
+          <div class="toggle-btn active" onclick="setToggle('scope','all')">全部 (All)</div>
+          <div class="toggle-btn" onclick="setToggle('scope','particles')">조사</div>
+          <div class="toggle-btn" onclick="setToggle('scope','endings')">종조사</div>
+          <div class="toggle-btn" onclick="setToggle('scope','structures')">문형</div>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-group-title">順番と問題数 (Order & Count)</div>
+        <div class="toggle-group" id="order-toggle">
+          <div class="toggle-btn active" onclick="setToggle('order','random')">ランダム (Random)</div>
+          <div class="toggle-btn" onclick="setToggle('order','table')">表の順番 (Table Order)</div>
+        </div>
+        <div class="setting-row">
+          <label>問題数 (Questions)</label>
+          <input type="range" id="q-count" min="5" max="54" value="20" oninput="document.getElementById('q-count-val').textContent=this.value">
+          <span class="val" id="q-count-val">20</span>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-group-title">制限時間 (Time Limit)</div>
+        <div class="toggle-group" id="timer-toggle">
+          <div class="toggle-btn active" onclick="setToggle('timer','on')">あり (On)</div>
+          <div class="toggle-btn" onclick="setToggle('timer','off')">なし (Off)</div>
+        </div>
+        <div class="setting-row" id="timer-slider-row">
+          <input type="range" id="q-time" min="5" max="60" value="20" oninput="document.getElementById('q-time-val').textContent=this.value+'s'">
+          <span class="val" id="q-time-val">20s</span>
+        </div>
+      </div>
+
+      <div class="setting-group" id="romaji-group">
+        <div class="setting-group-title">ローマ字入力 (Romaji Input)</div>
+        <div class="toggle-group" id="romaji-toggle">
+          <div class="toggle-btn" onclick="setToggle('romaji','on')">あり (On)</div>
+          <div class="toggle-btn active" onclick="setToggle('romaji','off')">なし (Off)</div>
+        </div>
+      </div>
+
+      <button class="start-btn" onclick="startQuiz()">スタート</button>
+    </div>
+
+    <div class="quiz-active" id="quiz-active">
+      <div class="quiz-progress" id="quiz-progress"></div>
+      <div class="quiz-sentence" id="quiz-sentence"></div>
+      <div class="quiz-korean" id="quiz-korean"></div>
+      <div class="timer-bar-track" id="timer-track">
+        <div class="timer-bar" id="timer-bar"></div>
+      </div>
+      <div class="timer-text" id="timer-text"></div>
+      <div class="quiz-choices" id="quiz-choices"></div>
+      <input type="text" class="quiz-input hidden" id="quiz-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="日本語で入力">
+      <div class="quiz-feedback" id="quiz-feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">次へ (Next)</button>
+    </div>
+
+    <div class="quiz-results" id="quiz-results">
+      <div class="quiz-score" id="quiz-score"></div>
+      <div class="results-list" id="results-list"></div>
+      <div class="results-btns">
+        <button onclick="showSetup()">もう一回</button>
+        <button onclick="switchTab('ref')">テーブルに戻る</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ===== DATA =====
+const particlesData = [
+  { particle: 'は', korean: '은/는', desc: 'topic', example: '<ruby>私<rt>わたし</rt></ruby>は<ruby>学生<rt>がくせい</rt></ruby>です', exKr: '나는 학생이다', sentence: '{私}は{学生}です', blank: 'は', furigana: 'わたし/がくせい' },
+  { particle: 'が', korean: '이/가', desc: 'subject', example: '<ruby>私<rt>わたし</rt></ruby>がやります', exKr: '내가 한다', sentence: '{私}が やります', blank: 'が', furigana: 'わたし' },
+  { particle: 'を', korean: '을/를', desc: 'object', example: 'ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べる', exKr: '밥을 먹는다', sentence: 'ご{飯}を{食}べる', blank: 'を', furigana: 'はん/た' },
+  { particle: 'の', korean: '의', desc: 'possession', example: '<ruby>私<rt>わたし</rt></ruby>の<ruby>家<rt>いえ</rt></ruby>', exKr: '나의 집', sentence: '{私}の{家}', blank: 'の', furigana: 'わたし/いえ' },
+  { particle: 'も', korean: '~도', desc: 'also', example: '<ruby>私<rt>わたし</rt></ruby>も<ruby>行<rt>い</rt></ruby>く', exKr: '나도 간다', sentence: '{私}も{行}く', blank: 'も', furigana: 'わたし/い' },
+  { particle: 'と', korean: '와/과', desc: 'and/with', example: '<ruby>犬<rt>いぬ</rt></ruby>と<ruby>猫<rt>ねこ</rt></ruby>', exKr: '개와 고양이', sentence: '{犬}と{猫}', blank: 'と', furigana: 'いぬ/ねこ' },
+  { particle: 'へ', korean: '~로/으로', desc: 'direction', example: '<ruby>日本<rt>にほん</rt></ruby>へ<ruby>行<rt>い</rt></ruby>く', exKr: '일본으로 간다', sentence: '{日本}へ{行}く', blank: 'へ', furigana: 'にほん/い' },
+  { particle: 'に', korean: '에/에게', desc: 'target/time', example: '<ruby>学校<rt>がっこう</rt></ruby>に<ruby>行<rt>い</rt></ruby>く', exKr: '학교에 간다', sentence: '{学校}に{行}く', blank: 'に', furigana: 'がっこう/い' },
+  { particle: 'で', korean: '에서/로', desc: 'place/means', example: '<ruby>学校<rt>がっこう</rt></ruby>で<ruby>勉強<rt>べんきょう</rt></ruby>する', exKr: '학교에서 공부한다', sentence: '{学校}で{勉強}する', blank: 'で', furigana: 'がっこう/べんきょう' },
+  { particle: 'から', korean: '~에서/~부터', desc: 'from', example: '<ruby>東京<rt>とうきょう</rt></ruby>から<ruby>来<rt>き</rt></ruby>た', exKr: '도쿄에서 왔다', sentence: '{東京}から{来}た', blank: 'から', furigana: 'とうきょう/き' },
+  { particle: 'ので', korean: '~때문에', desc: 'because', example: '<ruby>暑<rt>あつ</rt></ruby>いので<ruby>窓<rt>まど</rt></ruby>を<ruby>開<rt>あ</rt></ruby>けた', exKr: '더워서 창문을 열었다', sentence: '{暑}いので{窓}を{開}けた', blank: 'ので', furigana: 'あつ/まど/あ' },
+  { particle: 'より', korean: '~보다', desc: 'than', example: '<ruby>犬<rt>いぬ</rt></ruby>より<ruby>猫<rt>ねこ</rt></ruby>が<ruby>好<rt>す</rt></ruby>き', exKr: '개보다 고양이가 좋다', sentence: '{犬}より{猫}が{好}き', blank: 'より', furigana: 'いぬ/ねこ/す' },
+  { particle: 'まで', korean: '~까지', desc: 'until', example: '<ruby>五時<rt>ごじ</rt></ruby>まで<ruby>待<rt>ま</rt></ruby>つ', exKr: '5시까지 기다린다', sentence: '{五時}まで{待}つ', blank: 'まで', furigana: 'ごじ/ま' },
+  { particle: 'までに', korean: '~까지는', desc: 'by (deadline)', example: '<ruby>五時<rt>ごじ</rt></ruby>までに<ruby>来<rt>き</rt></ruby>てください', exKr: '5시까지는 와주세요', sentence: '{五時}までに{来}てください', blank: 'までに', furigana: 'ごじ/き' },
+  { particle: 'だけ', korean: '~만/~뿐', desc: 'only', example: '<ruby>一人<rt>ひとり</rt></ruby>だけ<ruby>来<rt>き</rt></ruby>た', exKr: '한 명만 왔다', sentence: '{一人}だけ{来}た', blank: 'だけ', furigana: 'ひとり/き' },
+  { particle: 'しか', korean: '~밖에', desc: 'only (+neg)', example: '<ruby>一人<rt>ひとり</rt></ruby>しかいない', exKr: '한 명밖에 없다', sentence: '{一人}しかいない', blank: 'しか', furigana: 'ひとり' },
+  { particle: 'ばかり', korean: '~뿐/~만', desc: 'nothing but', example: '<ruby>遊<rt>あそ</rt></ruby>んでばかりいる', exKr: '놀기만 한다', sentence: '{遊}んでばかりいる', blank: 'ばかり', furigana: 'あそ' },
+  { particle: 'や', korean: '~이나/~등', desc: 'and (incomplete list)', example: '<ruby>犬<rt>いぬ</rt></ruby>や<ruby>猫<rt>ねこ</rt></ruby>', exKr: '개나 고양이 등', sentence: '{犬}や{猫}', blank: 'や', furigana: 'いぬ/ねこ' },
+  { particle: 'とか', korean: '~라든가', desc: 'such as', example: '<ruby>映画<rt>えいが</rt></ruby>とか<ruby>音楽<rt>おんがく</rt></ruby>とか', exKr: '영화라든가 음악이라든가', sentence: '{映画}とか{音楽}とか', blank: 'とか', furigana: 'えいが/おんがく' },
+  { particle: 'し', korean: '~고/~며', desc: 'and/reason listing', example: '<ruby>安<rt>やす</rt></ruby>いし、おいしい', exKr: '싸고, 맛있다', sentence: '{安}いし、おいしい', blank: 'し', furigana: 'やす' },
+  { particle: 'でも', korean: '~라도', desc: 'even/or something', example: 'コーヒーでも<ruby>飲<rt>の</rt></ruby>もう', exKr: '커피라도 마시자', sentence: 'コーヒーでも{飲}もう', blank: 'でも', furigana: 'の' },
+  { particle: 'など', korean: '~등', desc: 'etc', example: '<ruby>犬<rt>いぬ</rt></ruby>など', exKr: '개 등', sentence: '{犬}など', blank: 'など', furigana: 'いぬ' },
+  { particle: 'くらい', korean: '~정도/~쯤', desc: 'about/approximately', example: '<ruby>三十分<rt>さんじゅっぷん</rt></ruby>くらい', exKr: '30분 정도', sentence: '{三十分}くらい', blank: 'くらい', furigana: 'さんじゅっぷん' },
+];
+
+const endingsData = [
+  { particle: 'か', korean: '~냐?/~까?', desc: 'question', example: '<ruby>行<rt>い</rt></ruby>きますか', exKr: '갑니까?', sentence: '{行}きますか', blank: 'か', furigana: 'い' },
+  { particle: 'かい', korean: '~니?', desc: 'casual question (male)', example: '<ruby>元気<rt>げんき</rt></ruby>かい', exKr: '잘 지내니?', sentence: '{元気}かい', blank: 'かい', furigana: 'げんき' },
+  { particle: 'だい', korean: '~니?', desc: 'casual wh-question', example: '<ruby>何<rt>なに</rt></ruby>をしているんだい', exKr: '뭐 하고 있는 거니?', sentence: '{何}をしているんだい', blank: 'だい', furigana: 'なに' },
+  { particle: 'よ', korean: '~야/~다고', desc: 'assertion', example: '<ruby>行<rt>い</rt></ruby>くよ', exKr: '간다고', sentence: '{行}くよ', blank: 'よ', furigana: 'い' },
+  { particle: 'ね', korean: '~지?/~네', desc: 'agreement/confirmation', example: '<ruby>暑<rt>あつ</rt></ruby>いね', exKr: '덥지?', sentence: '{暑}いね', blank: 'ね', furigana: 'あつ' },
+  { particle: 'わ', korean: '~네', desc: 'soft emphasis (feminine)', example: 'きれいだわ', exKr: '예쁘네', sentence: 'きれいだわ', blank: 'わ', furigana: '' },
+  { particle: 'な', korean: '~네/~구나', desc: 'self-reflection', example: 'すごいな', exKr: '대단하네', sentence: 'すごいな', blank: 'な', furigana: '' },
+  { particle: 'さ', korean: '~지/~거든', desc: 'casual filler', example: 'それはさ、<ruby>違<rt>ちが</rt></ruby>うよ', exKr: '그건 말이지, 다르다고', sentence: 'それはさ、{違}うよ', blank: 'さ', furigana: 'ちが' },
+  { particle: 'の', korean: '~거야/~거지', desc: 'explanation/question', example: 'どうしたの', exKr: '무슨 일이야?', sentence: 'どうしたの', blank: 'の', furigana: '' },
+  { particle: 'かしら', korean: '~일까', desc: 'wonder (feminine)', example: '<ruby>間<rt>ま</rt></ruby>に<ruby>合<rt>あ</rt></ruby>うかしら', exKr: '시간에 맞을까', sentence: '{間}に{合}うかしら', blank: 'かしら', furigana: 'ま/あ' },
+  { particle: 'ぜ', korean: '~다!', desc: 'strong assertion (male)', example: 'やるぜ', exKr: '한다!', sentence: 'やるぜ', blank: 'ぜ', furigana: '' },
+  { particle: 'ぞ', korean: '~다!', desc: 'strong assertion (male)', example: '<ruby>行<rt>い</rt></ruby>くぞ', exKr: '간다!', sentence: '{行}くぞ', blank: 'ぞ', furigana: 'い' },
+  { particle: 'かな', korean: '~일까/~인가', desc: 'wonder', example: '<ruby>明日<rt>あした</rt></ruby><ruby>晴<rt>は</rt></ruby>れるかな', exKr: '내일 맑을까', sentence: '{明日}{晴}れるかな', blank: 'かな', furigana: 'あした/は' },
+  { particle: 'こと', korean: '(강조/명령)', desc: 'emphasis/command', example: '<ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>ること', exKr: '빨리 잘 것', sentence: '{早}く{寝}ること', blank: 'こと', furigana: 'はや/ね' },
+  { particle: 'っけ', korean: '~였지?/~더라', desc: 'trying to recall', example: '<ruby>名前<rt>なまえ</rt></ruby>は<ruby>何<rt>なん</rt></ruby>だっけ', exKr: '이름이 뭐였지?', sentence: '{名前}は{何}だっけ', blank: 'っけ', furigana: 'なまえ/なん' },
+  { particle: 'とも', korean: '~고말고', desc: 'of course', example: 'もちろん<ruby>行<rt>い</rt></ruby>くとも', exKr: '물론 간다고말고', sentence: 'もちろん{行}くとも', blank: 'とも', furigana: 'い' },
+  { particle: 'もの', korean: '~거든/~인걸', desc: 'reason (feminine)', example: 'だって<ruby>寒<rt>さむ</rt></ruby>いもの', exKr: '왜냐면 춥거든', sentence: 'だって{寒}いもの', blank: 'もの', furigana: 'さむ' },
+];
+
+const structuresData = [
+  { category: 'noun', form: '현재 긍정', pattern: '~です', example: '<ruby>私<rt>わたし</rt></ruby>は<ruby>学生<rt>がくせい</rt></ruby>です', exKr: '나는 학생이다', answer: '私は学生です', romaji: 'watashi wa gakusei desu' },
+  { category: 'noun', form: '현재 부정', pattern: '~じゃないです', example: '<ruby>私<rt>わたし</rt></ruby>は<ruby>学生<rt>がくせい</rt></ruby>じゃないです', exKr: '나는 학생이 아니다', answer: '私は学生じゃないです', romaji: 'watashi wa gakusei janai desu' },
+  { category: 'noun', form: '과거 긍정', pattern: '~でした', example: '<ruby>昨日<rt>きのう</rt></ruby>は<ruby>学生<rt>がくせい</rt></ruby>でした', exKr: '어제는 학생이었다', answer: '昨日は学生でした', romaji: 'kinou wa gakusei deshita' },
+  { category: 'noun', form: '과거 부정', pattern: '~じゃなかったです', example: '<ruby>昨日<rt>きのう</rt></ruby>は<ruby>学生<rt>がくせい</rt></ruby>じゃなかったです', exKr: '어제는 학생이 아니었다', answer: '昨日は学生じゃなかったです', romaji: 'kinou wa gakusei janakatta desu' },
+  { category: 'i-adj', form: '현재 긍정', pattern: '~い', example: 'この<ruby>本<rt>ほん</rt></ruby>は<ruby>高<rt>たか</rt></ruby>い', exKr: '이 책은 비싸다', answer: 'この本は高い', romaji: 'kono hon wa takai' },
+  { category: 'i-adj', form: '현재 부정', pattern: '~くない', example: 'この<ruby>本<rt>ほん</rt></ruby>は<ruby>高<rt>たか</rt></ruby>くない', exKr: '이 책은 비싸지 않다', answer: 'この本は高くない', romaji: 'kono hon wa takakunai' },
+  { category: 'i-adj', form: '과거 긍정', pattern: '~かった', example: '<ruby>昨日<rt>きのう</rt></ruby>は<ruby>高<rt>たか</rt></ruby>かった', exKr: '어제는 비쌌다', answer: '昨日は高かった', romaji: 'kinou wa takakatta' },
+  { category: 'i-adj', form: '과거 부정', pattern: '~くなかった', example: '<ruby>昨日<rt>きのう</rt></ruby>は<ruby>高<rt>たか</rt></ruby>くなかった', exKr: '어제는 비싸지 않았다', answer: '昨日は高くなかった', romaji: 'kinou wa takakunakatta' },
+  { category: 'verb', form: '현재 긍정', pattern: '~ます', example: 'ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べます', exKr: '밥을 먹습니다', answer: 'ご飯を食べます', romaji: 'gohan wo tabemasu' },
+  { category: 'verb', form: '현재 부정', pattern: '~ません', example: 'ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べません', exKr: '밥을 먹지 않습니다', answer: 'ご飯を食べません', romaji: 'gohan wo tabemasen' },
+  { category: 'verb', form: '과거 긍정', pattern: '~ました', example: 'ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べました', exKr: '밥을 먹었습니다', answer: 'ご飯を食べました', romaji: 'gohan wo tabemashita' },
+  { category: 'verb', form: '과거 부정', pattern: '~ませんでした', example: 'ご<ruby>飯<rt>はん</rt></ruby>を<ruby>食<rt>た</rt></ruby>べませんでした', exKr: '밥을 먹지 않았습니다', answer: 'ご飯を食べませんでした', romaji: 'gohan wo tabemasen deshita' },
+];
+
+// ===== TABS =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (tab === 'ref' ? i === 0 : i === 1));
+  });
+  document.getElementById('tab-ref').classList.toggle('active', tab === 'ref');
+  document.getElementById('tab-quiz').classList.toggle('active', tab === 'quiz');
+  if (tab === 'ref') clearQuizTimer();
+}
+
+// ===== RENDER REFERENCE TABLES =====
+function renderRefTables() {
+  const container = document.getElementById('ref-container');
+
+  function makeParticleTable(data, title) {
+    let html = '<div class="ref-section"><h2>' + title + '</h2>';
+    html += '<table class="ref-table"><thead><tr><th>조사</th><th>한국어</th><th>예문</th><th>직역</th></tr></thead><tbody>';
+    for (const d of data) {
+      html += '<tr><td class="particle-cell">' + d.particle + '</td><td class="korean-cell">' + d.korean + '</td><td class="example-cell">' + d.example + '</td><td class="translation-cell">' + d.exKr + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  function makeStructureTable(data, title) {
+    let html = '<div class="ref-section"><h2>' + title + '</h2>';
+    html += '<table class="ref-table"><thead><tr><th>형태</th><th>패턴</th><th>예문</th><th>직역</th></tr></thead><tbody>';
+    for (const d of data) {
+      html += '<tr><td>' + d.form + '</td><td class="particle-cell">' + d.pattern + '</td><td class="example-cell">' + d.example + '</td><td class="translation-cell">' + d.exKr + '</td></tr>';
+    }
+    html += '</tbody></table></div>';
+    return html;
+  }
+
+  let left = '';
+  left += makeParticleTable(particlesData, '기본 조사 (Basic Particles)');
+
+  let right = '';
+  right += makeParticleTable(endingsData, '종조사 (Sentence-ending Particles)');
+  right += makeStructureTable(structuresData.filter(s => s.category === 'noun'), '명사/な형용사 (Noun/な-adj)');
+  right += makeStructureTable(structuresData.filter(s => s.category === 'i-adj'), 'い형용사 (い-adj)');
+  right += makeStructureTable(structuresData.filter(s => s.category === 'verb'), '동사 ます형 (Verb ます)');
+
+  container.innerHTML = '<div class="ref-col-left">' + left + '</div><div class="ref-col-right">' + right + '</div>';
+}
+
+// ===== QUIZ SETTINGS =====
+const settings = { qtype: 'fillin', scope: 'all', order: 'random', timer: 'on', romaji: 'off' };
+
+function setToggle(group, value) {
+  settings[group] = value;
+  const container = document.getElementById(group + '-toggle');
+  const btns = container.querySelectorAll('.toggle-btn');
+  btns.forEach(b => {
+    const btnVal = b.getAttribute('onclick').match(/'([^']+)'\)/)[1];
+    b.classList.toggle('active', btnVal === value);
+  });
+
+  if (group === 'timer') {
+    document.getElementById('timer-slider-row').classList.toggle('hidden', value === 'off');
+  }
+  if (group === 'scope' || group === 'qtype') updateMaxCount();
+  if (group === 'qtype') {
+    document.getElementById('romaji-group').classList.toggle('hidden', value === 'fillin');
+  }
+}
+
+function updateMaxCount() {
+  const pool = getQuizPool();
+  const slider = document.getElementById('q-count');
+  slider.max = pool.length;
+  if (parseInt(slider.value) > pool.length) {
+    slider.value = pool.length;
+    document.getElementById('q-count-val').textContent = pool.length;
+  }
+}
+
+// ===== QUIZ LOGIC =====
+let quizQuestions = [];
+let quizResults = [];
+let quizIndex = 0;
+let quizTimeLimit = 20;
+let quizTimer = null;
+let quizTimeLeft = 0;
+let quizLocked = false;
+
+function fisherYates(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getQuizPool() {
+  const pool = [];
+  const qtype = settings.qtype;
+  const scope = settings.scope;
+
+  if (qtype === 'fillin' || qtype === 'both') {
+    if (scope === 'all' || scope === 'particles') {
+      particlesData.forEach(d => pool.push({ type: 'fillin', source: 'particles', data: d }));
+    }
+    if (scope === 'all' || scope === 'endings') {
+      endingsData.forEach(d => pool.push({ type: 'fillin', source: 'endings', data: d }));
+    }
+  }
+  if (qtype === 'translate' || qtype === 'both') {
+    if (scope === 'all' || scope === 'particles') {
+      particlesData.forEach(d => pool.push({ type: 'translate', source: 'particles', data: d }));
+    }
+    if (scope === 'all' || scope === 'endings') {
+      endingsData.forEach(d => pool.push({ type: 'translate', source: 'endings', data: d }));
+    }
+    if (scope === 'all' || scope === 'structures') {
+      structuresData.forEach(d => pool.push({ type: 'translate', source: 'structures', data: d }));
+    }
+  }
+  if (qtype === 'fillin' && (scope === 'all' || scope === 'structures')) {
+    // structures don't have fill-in, add as translate
+    structuresData.forEach(d => pool.push({ type: 'translate', source: 'structures', data: d }));
+  }
+  return pool;
+}
+
+function getAllParticles(source) {
+  if (source === 'particles') return particlesData.map(d => d.particle);
+  if (source === 'endings') return endingsData.map(d => d.particle);
+  return [...particlesData.map(d => d.particle), ...endingsData.map(d => d.particle)];
+}
+
+function clearQuizTimer() {
+  if (quizTimer) { clearInterval(quizTimer); quizTimer = null; }
+}
+
+function showSetup() {
+  clearQuizTimer();
+  document.getElementById('quiz-setup').style.display = 'flex';
+  document.getElementById('quiz-active').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'none';
+}
+
+function startQuiz() {
+  const count = parseInt(document.getElementById('q-count').value);
+  quizTimeLimit = parseInt(document.getElementById('q-time').value);
+  const pool = getQuizPool();
+  quizQuestions = settings.order === 'random' ? fisherYates(pool).slice(0, count) : pool.slice(0, count);
+  quizResults = [];
+  quizIndex = 0;
+
+  document.getElementById('quiz-setup').style.display = 'none';
+  document.getElementById('quiz-active').style.display = 'flex';
+  document.getElementById('quiz-results').style.display = 'none';
+
+  showQuestion();
+}
+
+function showQuestion() {
+  if (quizIndex >= quizQuestions.length) { endQuiz(); return; }
+
+  quizLocked = false;
+  const q = quizQuestions[quizIndex];
+  document.getElementById('quiz-progress').textContent = (quizIndex + 1) + ' / ' + quizQuestions.length;
+  document.getElementById('quiz-feedback').textContent = '';
+  document.getElementById('quiz-feedback').className = 'quiz-feedback';
+  document.getElementById('next-btn').style.display = 'none';
+
+  const choicesEl = document.getElementById('quiz-choices');
+  const inputEl = document.getElementById('quiz-input');
+  const koreanEl = document.getElementById('quiz-korean');
+  const sentenceEl = document.getElementById('quiz-sentence');
+
+  choicesEl.innerHTML = '';
+  choicesEl.classList.remove('hidden');
+  inputEl.classList.add('hidden');
+  inputEl.value = '';
+  koreanEl.textContent = '';
+
+  if (q.type === 'fillin') {
+    // Show sentence with blank
+    const d = q.data;
+    let sentenceHtml = d.example.replace(new RegExp('(?<![a-z])' + escapeRegex(d.blank) + '(?![a-z])', ''), '<span class="blank">&nbsp;</span>');
+    // If replacement didn't work (particle inside ruby), try simpler approach
+    if (!sentenceHtml.includes('blank')) {
+      sentenceHtml = d.example.replace(d.blank, '<span class="blank">&nbsp;</span>');
+    }
+    sentenceEl.innerHTML = sentenceHtml;
+    koreanEl.textContent = d.exKr;
+
+    // Generate 4 choices
+    const allP = [...new Set(getAllParticles(q.source))];
+    const correct = d.particle;
+    let choices = [correct];
+    const others = fisherYates(allP.filter(p => p !== correct));
+    choices = choices.concat(others.slice(0, 3));
+    choices = fisherYates(choices);
+
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.textContent = c;
+      btn.addEventListener('click', () => checkFillin(btn, c, correct));
+      choicesEl.appendChild(btn);
+    });
+  } else {
+    // Translation mode
+    choicesEl.classList.add('hidden');
+    inputEl.classList.remove('hidden');
+    inputEl.disabled = false;
+    inputEl.placeholder = settings.romaji === 'on' ? 'ローマ字 or 日本語' : '日本語で入力';
+
+    if (q.source === 'structures') {
+      koreanEl.textContent = q.data.exKr;
+      sentenceEl.innerHTML = '韓国語を日本語に:';
+    } else {
+      koreanEl.textContent = q.data.exKr;
+      sentenceEl.innerHTML = '韓国語を日本語に:';
+    }
+    inputEl.focus();
+  }
+
+  // Timer
+  if (settings.timer === 'on') {
+    document.getElementById('timer-track').classList.remove('hidden');
+    document.getElementById('timer-text').classList.remove('hidden');
+    quizTimeLeft = quizTimeLimit;
+    updateTimerDisplay();
+    const bar = document.getElementById('timer-bar');
+    bar.style.width = '100%';
+    bar.classList.remove('warning');
+    clearQuizTimer();
+    const startTime = Date.now();
+    quizTimer = setInterval(() => {
+      const elapsed = (Date.now() - startTime) / 1000;
+      quizTimeLeft = Math.max(0, quizTimeLimit - elapsed);
+      bar.style.width = (quizTimeLeft / quizTimeLimit * 100) + '%';
+      if (quizTimeLeft / quizTimeLimit < 0.25) bar.classList.add('warning');
+      updateTimerDisplay();
+      if (quizTimeLeft <= 0) { clearQuizTimer(); handleTimeout(); }
+    }, 100);
+  } else {
+    document.getElementById('timer-track').classList.add('hidden');
+    document.getElementById('timer-text').classList.add('hidden');
+  }
+}
+
+function escapeRegex(s) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function updateTimerDisplay() {
+  document.getElementById('timer-text').textContent = Math.ceil(quizTimeLeft) + 's';
+}
+
+function getExplanation(q, chosen) {
+  const d = q.data;
+  if (q.type === 'fillin') {
+    return d.particle + ' (' + d.korean + ') = ' + d.desc + '. ' + d.exKr;
+  }
+  if (q.source === 'structures') {
+    return d.pattern + ' = ' + d.form + '. ' + d.exKr;
+  }
+  return d.particle + ' (' + d.korean + ') = ' + d.desc + '. ' + d.exKr;
+}
+
+function getRomaji(q) {
+  if (q.source === 'structures' && q.data.romaji) return q.data.romaji;
+  // Build romaji from example by stripping to plain text
+  const plain = q.data.example.replace(/<ruby>([^<]*)<rt>[^<]*<\/rt><\/ruby>/g, '$1').replace(/<[^>]+>/g, '');
+  return plain;
+}
+
+function showFeedback(passed, q, chosen) {
+  const fb = document.getElementById('quiz-feedback');
+  const nextBtn = document.getElementById('next-btn');
+
+  if (passed) {
+    fb.textContent = '\u2713';
+    fb.className = 'quiz-feedback correct';
+    nextBtn.style.display = 'inline-block';
+  } else {
+    let html = q.data.example;
+    if (q.source === 'structures' && q.data.romaji) {
+      html += '<span class="romaji-hint">' + q.data.romaji + '</span>';
+    }
+    html += '<span class="explanation">' + getExplanation(q, chosen) + '</span>';
+    fb.innerHTML = html;
+    fb.className = 'quiz-feedback wrong';
+    nextBtn.style.display = 'inline-block';
+  }
+}
+
+function nextQuestion() {
+  document.getElementById('next-btn').style.display = 'none';
+  quizIndex++;
+  showQuestion();
+}
+
+function handleTimeout() {
+  quizLocked = true;
+  const q = quizQuestions[quizIndex];
+  const correctDisplay = q.type === 'fillin' ? q.data.particle : q.data.example;
+
+  quizResults.push({ q, answer: '\u2014', correct: correctDisplay, passed: false });
+
+  if (q.type === 'fillin') {
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.textContent === q.data.particle) b.classList.add('correct');
+    });
+  }
+
+  showFeedback(false, q, null);
+}
+
+function checkFillin(btn, chosen, correct) {
+  if (quizLocked) return;
+  quizLocked = true;
+  clearQuizTimer();
+
+  const passed = chosen === correct;
+  quizResults.push({ q: quizQuestions[quizIndex], answer: chosen, correct: correct, passed });
+
+  if (passed) {
+    btn.classList.add('correct');
+  } else {
+    btn.classList.add('wrong');
+    document.querySelectorAll('.choice-btn').forEach(b => {
+      if (b.textContent === correct) b.classList.add('correct');
+    });
+  }
+
+  showFeedback(passed, quizQuestions[quizIndex], chosen);
+}
+
+function checkTranslation() {
+  if (quizLocked) return;
+  const input = document.getElementById('quiz-input');
+  const answer = input.value.trim();
+  if (!answer) return;
+
+  quizLocked = true;
+  clearQuizTimer();
+  input.disabled = true;
+
+  const q = quizQuestions[quizIndex];
+  let correctText, correctDisplay;
+
+  if (q.source === 'structures') {
+    correctText = q.data.answer;
+    correctDisplay = q.data.example;
+  } else {
+    correctText = q.data.example.replace(/<ruby>([^<]*)<rt>[^<]*<\/rt><\/ruby>/g, '$1').replace(/<[^>]+>/g, '');
+    correctDisplay = q.data.example;
+  }
+
+  const normalize = s => s.replace(/\s+/g, '').replace(/[。、！？]/g, '');
+  let passed = normalize(answer) === normalize(correctText);
+
+  if (!passed && settings.romaji === 'on' && q.source === 'structures') {
+    const romajiNorm = normalize(q.data.romaji.toLowerCase());
+    passed = normalize(answer.toLowerCase()) === romajiNorm;
+  }
+
+  quizResults.push({ q, answer, correct: correctDisplay, passed });
+
+  showFeedback(passed, q, answer);
+}
+
+function endQuiz() {
+  clearQuizTimer();
+  document.getElementById('quiz-active').style.display = 'none';
+  document.getElementById('quiz-results').style.display = 'flex';
+
+  const total = quizResults.length;
+  const right = quizResults.filter(r => r.passed).length;
+  const pct = Math.round((right / total) * 100);
+  document.getElementById('quiz-score').innerHTML = right + ' / ' + total + ' <span class="pct">(' + pct + '%)</span>';
+
+  let html = '<table><thead><tr><th>#</th><th>문제</th><th>입력</th><th>정답</th><th></th></tr></thead><tbody>';
+  quizResults.forEach((r, i) => {
+    const cls = r.passed ? 'correct-row' : 'wrong-row';
+    const icon = r.passed ? '<span style="color:#3a8a3a">\u2713</span>' : '<span style="color:#c44">\u2717</span>';
+    const qLabel = r.q.type === 'fillin' ? r.q.data.particle : r.q.data.exKr;
+    html += '<tr class="' + cls + '"><td>' + (i+1) + '</td><td>' + qLabel + '</td><td>' + r.answer + '</td><td>' + r.correct + '</td><td>' + icon + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('results-list').innerHTML = html;
+}
+
+// Enter key for translation
+document.getElementById('quiz-input').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') checkTranslation();
+});
+
+// Init
+renderRefTables();
+updateMaxCount();
+</script>
+</body>
+</html>
