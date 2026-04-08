@@ -146,6 +146,13 @@
   ruby { ruby-position: over; }
   rt { font-size: 0.55em; color: #888; }
 
+  .conj-examples {
+    font-size: 0.65rem;
+    color: #555;
+    padding: 0.3rem 0.5rem;
+    line-height: 1.8;
+  }
+
   /* Quiz */
   .quiz-panel {
     flex: 1;
@@ -502,7 +509,8 @@
           <div class="toggle-btn active" onclick="setToggle('scope','all')">全部 (All)</div>
           <div class="toggle-btn" onclick="setToggle('scope','particles')">조사</div>
           <div class="toggle-btn" onclick="setToggle('scope','endings')">종조사</div>
-          <div class="toggle-btn" onclick="setToggle('scope','structures')">문형</div>
+          <div class="toggle-btn" onclick="setToggle('scope','structures')">활용</div>
+          <div class="toggle-btn" onclick="setToggle('scope','grammar')">문법</div>
         </div>
       </div>
 
@@ -514,7 +522,7 @@
         </div>
         <div class="setting-row">
           <label>問題数 (Questions)</label>
-          <input type="range" id="q-count" min="5" max="54" value="20" oninput="document.getElementById('q-count-val').textContent=this.value">
+          <input type="range" id="q-count" min="5" max="200" value="20" oninput="document.getElementById('q-count-val').textContent=this.value">
           <span class="val" id="q-count-val">20</span>
         </div>
       </div>
@@ -838,6 +846,311 @@ const structuresData = [
   ]},
 ];
 
+const grammarData = [
+  // ~より / ~のほうが (비교)
+  { section: '비교', form: '비교', pattern: 'Aのほうが / Bより', example: '<ruby>中国<rt>ちゅうごく</rt></ruby>のほうが<ruby>日本<rt>にほん</rt></ruby>より<ruby>大<rt>おお</rt></ruby>きいです', exKr: '중국이 일본보다 크다', quiz: [
+    { q: '<ruby>夏<rt>なつ</rt></ruby>より<ruby>冬<rt>ふゆ</rt></ruby>のほうが<ruby>好<rt>す</rt></ruby>きです', k: '여름보다 겨울을 더 좋아한다', a: '夏より冬のほうが好きです', r: 'natsu yori fuyu no hou ga suki desu' },
+    { q: '<ruby>電車<rt>でんしゃ</rt></ruby>のほうがバスより<ruby>速<rt>はや</rt></ruby>いです', k: '전철이 버스보다 빠르다', a: '電車のほうがバスより速いです', r: 'densha no hou ga basu yori hayai desu' },
+    { q: '<ruby>東京<rt>とうきょう</rt></ruby>のほうが<ruby>大阪<rt>おおさか</rt></ruby>より<ruby>大<rt>おお</rt></ruby>きいです', k: '도쿄가 오사카보다 크다', a: '東京のほうが大阪より大きいです', r: 'toukyou no hou ga oosaka yori ookii desu' },
+  ]},
+  { section: '비교', form: '질문', pattern: 'どちらのほうが', example: '<ruby>日本<rt>にほん</rt></ruby>とカナダとどちらのほうが<ruby>寒<rt>さむ</rt></ruby>いですか', exKr: '일본과 캐나다 중 어느 쪽이 더 춥나요', quiz: [
+    { q: '<ruby>犬<rt>いぬ</rt></ruby>と<ruby>猫<rt>ねこ</rt></ruby>とどちらのほうが<ruby>好<rt>す</rt></ruby>きですか', k: '개와 고양이 중 어느 쪽을 더 좋아해요?', a: '犬と猫とどちらのほうが好きですか', r: 'inu to neko to dochira no hou ga suki desu ka' },
+    { q: '<ruby>紅茶<rt>こうちゃ</rt></ruby>とコーヒーとどちらのほうがいいですか', k: '홍차와 커피 중 어느 쪽이 좋아요?', a: '紅茶とコーヒーとどちらのほうがいいですか', r: 'koucha to koohii to dochira no hou ga ii desu ka' },
+    { q: '<ruby>夏<rt>なつ</rt></ruby>と<ruby>冬<rt>ふゆ</rt></ruby>とどちらのほうが<ruby>好<rt>す</rt></ruby>きですか', k: '여름과 겨울 중 어느 쪽을 더 좋아해요?', a: '夏と冬とどちらのほうが好きですか', r: 'natsu to fuyu to dochira no hou ga suki desu ka' },
+  ]},
+  { section: '비교', form: '최상급', pattern: 'いちばん (ichiban)', example: '<ruby>秋<rt>あき</rt></ruby>がいちばん<ruby>好<rt>す</rt></ruby>きです', exKr: '가을을 가장 좋아한다', quiz: [
+    { q: '<ruby>日本語<rt>にほんご</rt></ruby>がいちばん<ruby>難<rt>むずか</rt></ruby>しいです', k: '일본어가 가장 어렵다', a: '日本語がいちばん難しいです', r: 'nihongo ga ichiban muzukashii desu' },
+    { q: 'この<ruby>店<rt>みせ</rt></ruby>がいちばんおいしいです', k: '이 가게가 가장 맛있다', a: 'この店がいちばんおいしいです', r: 'kono mise ga ichiban oishii desu' },
+    { q: '<ruby>富士山<rt>ふじさん</rt></ruby>がいちばん<ruby>高<rt>たか</rt></ruby>いです', k: '후지산이 가장 높다', a: '富士山がいちばん高いです', r: 'fujisan ga ichiban takai desu' },
+  ]},
+  // ~の (것/소유)
+  { section: '~の', form: '것', pattern: '~の (no)', example: '<ruby>赤<rt>あか</rt></ruby>いのをください', exKr: '빨간 것을 주세요', quiz: [
+    { q: '<ruby>大<rt>おお</rt></ruby>きいのがいいです', k: '큰 것이 좋아요', a: '大きいのがいいです', r: 'ookii no ga ii desu' },
+    { q: '<ruby>安<rt>やす</rt></ruby>いのをください', k: '싼 것을 주세요', a: '安いのをください', r: 'yasui no wo kudasai' },
+    { q: '<ruby>青<rt>あお</rt></ruby>いのは<ruby>私<rt>わたし</rt></ruby>のです', k: '파란 것은 내 거예요', a: '青いのは私のです', r: 'aoi no wa watashi no desu' },
+  ]},
+  { section: '~の', form: '소유', pattern: 'Nの (no)', example: 'それはメアリーさんのです', exKr: '그것은 메리의 것이다', quiz: [
+    { q: 'この<ruby>本<rt>ほん</rt></ruby>は<ruby>田中<rt>たなか</rt></ruby>さんのです', k: '이 책은 다나카 씨 것이다', a: 'この本は田中さんのです', r: 'kono hon wa tanaka san no desu' },
+    { q: 'あの<ruby>車<rt>くるま</rt></ruby>は<ruby>父<rt>ちち</rt></ruby>のです', k: '저 차는 아버지 것이다', a: 'あの車は父のです', r: 'ano kuruma wa chichi no desu' },
+    { q: 'この<ruby>傘<rt>かさ</rt></ruby>は<ruby>誰<rt>だれ</rt></ruby>のですか', k: '이 우산은 누구 것이에요?', a: 'この傘は誰のですか', r: 'kono kasa wa dare no desu ka' },
+  ]},
+  // ~つもり (계획)
+  { section: '계획', form: '계획', pattern: 'つもりです', example: '<ruby>日本<rt>にほん</rt></ruby>へ<ruby>行<rt>い</rt></ruby>くつもりです', exKr: '일본에 갈 예정이다', quiz: [
+    { q: '<ruby>来年<rt>らいねん</rt></ruby><ruby>結婚<rt>けっこん</rt></ruby>するつもりです', k: '내년에 결혼할 예정이다', a: '来年結婚するつもりです', r: 'rainen kekkon suru tsumori desu' },
+    { q: '<ruby>大学<rt>だいがく</rt></ruby>に<ruby>入<rt>はい</rt></ruby>るつもりです', k: '대학에 들어갈 예정이다', a: '大学に入るつもりです', r: 'daigaku ni hairu tsumori desu' },
+    { q: '<ruby>明日<rt>あした</rt></ruby><ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きるつもりです', k: '내일 일찍 일어날 예정이다', a: '明日早く起きるつもりです', r: 'ashita hayaku okiru tsumori desu' },
+  ]},
+  { section: '계획', form: '부정', pattern: 'ないつもりです', example: '<ruby>行<rt>い</rt></ruby>かないつもりです', exKr: '가지 않을 예정이다', quiz: [
+    { q: '<ruby>今日<rt>きょう</rt></ruby>は<ruby>食<rt>た</rt></ruby>べないつもりです', k: '오늘은 먹지 않을 예정이다', a: '今日は食べないつもりです', r: 'kyou wa tabenai tsumori desu' },
+    { q: 'お<ruby>酒<rt>さけ</rt></ruby>は<ruby>飲<rt>の</rt></ruby>まないつもりです', k: '술은 마시지 않을 예정이다', a: 'お酒は飲まないつもりです', r: 'osake wa nomanai tsumori desu' },
+    { q: '<ruby>転職<rt>てんしょく</rt></ruby>しないつもりです', k: '이직하지 않을 예정이다', a: '転職しないつもりです', r: 'tenshoku shinai tsumori desu' },
+  ]},
+  { section: '계획', form: '과거', pattern: 'つもりでした', example: '<ruby>行<rt>い</rt></ruby>くつもりでしたが<ruby>行<rt>い</rt></ruby>きませんでした', exKr: '갈 예정이었지만 안 갔다', quiz: [
+    { q: '<ruby>買<rt>か</rt></ruby>うつもりでしたがやめました', k: '살 예정이었지만 그만뒀다', a: '買うつもりでしたがやめました', r: 'kau tsumori deshita ga yamemashita' },
+    { q: '<ruby>旅行<rt>りょこう</rt></ruby>するつもりでしたが<ruby>病気<rt>びょうき</rt></ruby>になりました', k: '여행할 예정이었지만 아팠다', a: '旅行するつもりでしたが病気になりました', r: 'ryokou suru tsumori deshita ga byouki ni narimashita' },
+    { q: '<ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>るつもりでしたが<ruby>遅<rt>おそ</rt></ruby>くなりました', k: '일찍 잘 예정이었지만 늦어졌다', a: '早く寝るつもりでしたが遅くなりました', r: 'hayaku neru tsumori deshita ga osoku narimashita' },
+  ]},
+  // ~くなる / ~になる (변화)
+  { section: '변화', form: '변화', pattern: '~くなる / ~になる', example: '<ruby>暑<rt>あつ</rt></ruby>くなりました', exKr: '더워졌다', quiz: [
+    { q: '<ruby>日本語<rt>にほんご</rt></ruby>が<ruby>上手<rt>じょうず</rt></ruby>になりました', k: '일본어를 잘하게 됐다', a: '日本語が上手になりました', r: 'nihongo ga jouzu ni narimashita' },
+    { q: '<ruby>寒<rt>さむ</rt></ruby>くなりました', k: '추워졌다', a: '寒くなりました', r: 'samuku narimashita' },
+    { q: '<ruby>有名<rt>ゆうめい</rt></ruby>になりました', k: '유명해졌다', a: '有名になりました', r: 'yuumei ni narimashita' },
+  ]},
+  // ~たい / ~たがる (희망)
+  { section: '희망', form: '내 희망', pattern: '~たい (tai)', example: '<ruby>日本<rt>にほん</rt></ruby>に<ruby>行<rt>い</rt></ruby>きたいです', exKr: '일본에 가고 싶다', quiz: [
+    { q: 'ラーメンが<ruby>食<rt>た</rt></ruby>べたいです', k: '라멘이 먹고 싶다', a: 'ラーメンが食べたいです', r: 'raamen ga tabetai desu' },
+    { q: '<ruby>新<rt>あたら</rt></ruby>しい<ruby>服<rt>ふく</rt></ruby>が<ruby>買<rt>か</rt></ruby>いたいです', k: '새 옷이 사고 싶다', a: '新しい服が買いたいです', r: 'atarashii fuku ga kaitai desu' },
+    { q: '<ruby>海<rt>うみ</rt></ruby>で<ruby>泳<rt>およ</rt></ruby>ぎたいです', k: '바다에서 수영하고 싶다', a: '海で泳ぎたいです', r: 'umi de oyogitai desu' },
+  ]},
+  { section: '희망', form: '남 희망', pattern: '~たがっている (tagatte iru)', example: '<ruby>彼<rt>かれ</rt></ruby>は<ruby>行<rt>い</rt></ruby>きたがっています', exKr: '그는 가고 싶어한다', quiz: [
+    { q: '<ruby>妹<rt>いもうと</rt></ruby>はケーキを<ruby>食<rt>た</rt></ruby>べたがっています', k: '여동생은 케이크를 먹고 싶어한다', a: '妹はケーキを食べたがっています', r: 'imouto wa keeki wo tabetagatte imasu' },
+    { q: '<ruby>子供<rt>こども</rt></ruby>は<ruby>外<rt>そと</rt></ruby>で<ruby>遊<rt>あそ</rt></ruby>びたがっています', k: '아이는 밖에서 놀고 싶어한다', a: '子供は外で遊びたがっています', r: 'kodomo wa soto de asobitagatte imasu' },
+    { q: '<ruby>彼女<rt>かのじょ</rt></ruby>は<ruby>新<rt>あたら</rt></ruby>しいバッグを<ruby>買<rt>か</rt></ruby>いたがっています', k: '그녀는 새 가방을 사고 싶어한다', a: '彼女は新しいバッグを買いたがっています', r: 'kanojo wa atarashii baggu wo kaitagatte imasu' },
+  ]},
+  // ~たり~たり (이것저것)
+  { section: '나열', form: '나열', pattern: '~たり~たり', example: '<ruby>食<rt>た</rt></ruby>べたり<ruby>飲<rt>の</rt></ruby>んだりします', exKr: '먹기도 하고 마시기도 한다', quiz: [
+    { q: '<ruby>週末<rt>しゅうまつ</rt></ruby>は<ruby>映画<rt>えいが</rt></ruby>を<ruby>見<rt>み</rt></ruby>たり<ruby>本<rt>ほん</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んだりします', k: '주말에는 영화를 보기도 하고 책을 읽기도 한다', a: '週末は映画を見たり本を読んだりします', r: 'shuumatsu wa eiga wo mitari hon wo yondari shimasu' },
+    { q: '<ruby>歌<rt>うた</rt></ruby>ったり<ruby>踊<rt>おど</rt></ruby>ったりしました', k: '노래하기도 하고 춤추기도 했다', a: '歌ったり踊ったりしました', r: 'utattari odottari shimashita' },
+    { q: '<ruby>掃除<rt>そうじ</rt></ruby>したり<ruby>洗濯<rt>せんたく</rt></ruby>したりしました', k: '청소하기도 하고 빨래하기도 했다', a: '掃除したり洗濯したりしました', r: 'souji shitari sentaku shitari shimashita' },
+  ]},
+  // ~ことがある (경험)
+  { section: '경험', form: '경험', pattern: '~ことがある', example: '<ruby>日本<rt>にほん</rt></ruby>に<ruby>行<rt>い</rt></ruby>ったことがあります', exKr: '일본에 가본 적 있다', quiz: [
+    { q: '<ruby>寿司<rt>すし</rt></ruby>を<ruby>食<rt>た</rt></ruby>べたことがあります', k: '초밥을 먹어본 적 있다', a: '寿司を食べたことがあります', r: 'sushi wo tabeta koto ga arimasu' },
+    { q: '<ruby>富士山<rt>ふじさん</rt></ruby>に<ruby>登<rt>のぼ</rt></ruby>ったことがあります', k: '후지산에 올라본 적 있다', a: '富士山に登ったことがあります', r: 'fujisan ni nobotta koto ga arimasu' },
+    { q: '<ruby>着物<rt>きもの</rt></ruby>を<ruby>着<rt>き</rt></ruby>たことがあります', k: '기모노를 입어본 적 있다', a: '着物を着たことがあります', r: 'kimono wo kita koto ga arimasu' },
+  ]},
+  { section: '경험', form: '없음', pattern: '~ことがない', example: '<ruby>行<rt>い</rt></ruby>ったことがありません', exKr: '가본 적 없다', quiz: [
+    { q: 'スキーをしたことがありません', k: '스키를 한 적 없다', a: 'スキーをしたことがありません', r: 'sukii wo shita koto ga arimasen' },
+    { q: '<ruby>納豆<rt>なっとう</rt></ruby>を<ruby>食<rt>た</rt></ruby>べたことがありません', k: '낫토를 먹어본 적 없다', a: '納豆を食べたことがありません', r: 'nattou wo tabeta koto ga arimasen' },
+    { q: '<ruby>海外<rt>かいがい</rt></ruby>に<ruby>行<rt>い</rt></ruby>ったことがありません', k: '해외에 가본 적 없다', a: '海外に行ったことがありません', r: 'kaigai ni itta koto ga arimasen' },
+  ]},
+  // ~すぎる (너무)
+  { section: '과도', form: '과도', pattern: '~すぎる (sugiru)', example: '<ruby>食<rt>た</rt></ruby>べすぎました', exKr: '너무 많이 먹었다', quiz: [
+    { q: '<ruby>飲<rt>の</rt></ruby>みすぎました', k: '너무 많이 마셨다', a: '飲みすぎました', r: 'nomisugimashita' },
+    { q: 'この<ruby>部屋<rt>へや</rt></ruby>は<ruby>暑<rt>あつ</rt></ruby>すぎます', k: '이 방은 너무 덥다', a: 'この部屋は暑すぎます', r: 'kono heya wa atsusugimasu' },
+    { q: '<ruby>昨日<rt>きのう</rt></ruby><ruby>遊<rt>あそ</rt></ruby>びすぎました', k: '어제 너무 많이 놀았다', a: '昨日遊びすぎました', r: 'kinou asobisugimashita' },
+  ]},
+  // ~ほうがいい (추천)
+  { section: '추천', form: '추천', pattern: '~ほうがいい', example: '<ruby>行<rt>い</rt></ruby>ったほうがいいです', exKr: '가는 게 좋다', quiz: [
+    { q: '<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>んだほうがいいです', k: '약을 먹는 게 좋다', a: '薬を飲んだほうがいいです', r: 'kusuri wo nonda hou ga ii desu' },
+    { q: '<ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>たほうがいいです', k: '일찍 자는 게 좋다', a: '早く寝たほうがいいです', r: 'hayaku neta hou ga ii desu' },
+    { q: '<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>ったほうがいいです', k: '병원에 가는 게 좋다', a: '病院に行ったほうがいいです', r: 'byouin ni itta hou ga ii desu' },
+  ]},
+  { section: '추천', form: '금지', pattern: '~ないほうがいい', example: '<ruby>行<rt>い</rt></ruby>かないほうがいいです', exKr: '안 가는 게 좋다', quiz: [
+    { q: '<ruby>夜<rt>よる</rt></ruby><ruby>遅<rt>おそ</rt></ruby>く<ruby>食<rt>た</rt></ruby>べないほうがいいです', k: '밤 늦게 먹지 않는 게 좋다', a: '夜遅く食べないほうがいいです', r: 'yoru osoku tabenai hou ga ii desu' },
+    { q: 'あまりお<ruby>酒<rt>さけ</rt></ruby>を<ruby>飲<rt>の</rt></ruby>まないほうがいいです', k: '너무 술을 마시지 않는 게 좋다', a: 'あまりお酒を飲まないほうがいいです', r: 'amari osake wo nomanai hou ga ii desu' },
+    { q: '<ruby>無理<rt>むり</rt></ruby>しないほうがいいです', k: '무리하지 않는 게 좋다', a: '無理しないほうがいいです', r: 'muri shinai hou ga ii desu' },
+  ]},
+  // ~んです (설명톤)
+  { section: '설명', form: '설명', pattern: '~んです (n desu)', example: '<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>るんです', exKr: '비가 오는 거예요', quiz: [
+    { q: '<ruby>明日<rt>あした</rt></ruby><ruby>試験<rt>しけん</rt></ruby>があるんです', k: '내일 시험이 있는 거예요', a: '明日試験があるんです', r: 'ashita shiken ga arun desu' },
+    { q: '<ruby>頭<rt>あたま</rt></ruby>が<ruby>痛<rt>いた</rt></ruby>いんです', k: '머리가 아픈 거예요', a: '頭が痛いんです', r: 'atama ga itain desu' },
+    { q: '<ruby>日本<rt>にほん</rt></ruby>に<ruby>留学<rt>りゅうがく</rt></ruby>したいんです', k: '일본에 유학하고 싶은 거예요', a: '日本に留学したいんです', r: 'nihon ni ryuugaku shitain desu' },
+  ]},
+  { section: '설명', form: '질문', pattern: '~んですか (n desu ka)', example: 'どうしたんですか', exKr: '무슨 일이에요', quiz: [
+    { q: 'どこへ<ruby>行<rt>い</rt></ruby>くんですか', k: '어디에 가는 거예요?', a: 'どこへ行くんですか', r: 'doko e ikun desu ka' },
+    { q: '<ruby>何<rt>なに</rt></ruby>を<ruby>食<rt>た</rt></ruby>べているんですか', k: '뭘 먹고 있는 거예요?', a: '何を食べているんですか', r: 'nani wo tabeteiru n desu ka' },
+    { q: 'なぜ<ruby>泣<rt>な</rt></ruby>いているんですか', k: '왜 울고 있는 거예요?', a: 'なぜ泣いているんですか', r: 'naze naiteiru n desu ka' },
+  ]},
+  // ~でしょう (추측)
+  { section: '추측', form: '추측', pattern: '~でしょう (deshou)', example: '<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>るでしょう', exKr: '비가 올 것이다', quiz: [
+    { q: '<ruby>明日<rt>あした</rt></ruby>は<ruby>晴<rt>は</rt></ruby>れるでしょう', k: '내일은 맑을 것이다', a: '明日は晴れるでしょう', r: 'ashita wa hareru deshou' },
+    { q: '<ruby>彼<rt>かれ</rt></ruby>は<ruby>来<rt>く</rt></ruby>るでしょう', k: '그는 올 것이다', a: '彼は来るでしょう', r: 'kare wa kuru deshou' },
+    { q: '<ruby>試験<rt>しけん</rt></ruby>は<ruby>難<rt>むずか</rt></ruby>しいでしょう', k: '시험은 어려울 것이다', a: '試験は難しいでしょう', r: 'shiken wa muzukashii deshou' },
+  ]},
+  { section: '추측', form: '질문', pattern: '~でしょうか (deshou ka)', example: '<ruby>明日<rt>あした</rt></ruby><ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>るでしょうか', exKr: '내일 비가 올까요', quiz: [
+    { q: '<ruby>間<rt>ま</rt></ruby>に<ruby>合<rt>あ</rt></ruby>うでしょうか', k: '시간에 맞을까요', a: '間に合うでしょうか', r: 'ma ni au deshou ka' },
+    { q: 'この<ruby>道<rt>みち</rt></ruby>で<ruby>合<rt>あ</rt></ruby>っているでしょうか', k: '이 길이 맞을까요', a: 'この道で合っているでしょうか', r: 'kono michi de atte iru deshou ka' },
+    { q: '<ruby>電車<rt>でんしゃ</rt></ruby>はまだあるでしょうか', k: '전철은 아직 있을까요', a: '電車はまだあるでしょうか', r: 'densha wa mada aru deshou ka' },
+  ]},
+  // ~なければいけません (해야 함)
+  { section: '의무', form: '의무', pattern: '~なければいけません', example: '<ruby>勉強<rt>べんきょう</rt></ruby>しなければいけません', exKr: '공부해야 한다', quiz: [
+    { q: '<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>まなければいけません', k: '약을 먹어야 한다', a: '薬を飲まなければいけません', r: 'kusuri wo nomanakereba ikemasen' },
+    { q: '<ruby>宿題<rt>しゅくだい</rt></ruby>をしなければいけません', k: '숙제를 해야 한다', a: '宿題をしなければいけません', r: 'shukudai wo shinakereba ikemasen' },
+    { q: '<ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きなければいけません', k: '일찍 일어나야 한다', a: '早く起きなければいけません', r: 'hayaku okinakereba ikemasen' },
+  ]},
+  { section: '의무', form: '축약', pattern: '~なきゃ (nakya)', example: '<ruby>行<rt>い</rt></ruby>かなきゃ', exKr: '가야 해', quiz: [
+    { q: '<ruby>勉強<rt>べんきょう</rt></ruby>しなきゃ', k: '공부해야 해', a: '勉強しなきゃ', r: 'benkyou shinakya' },
+    { q: '<ruby>早<rt>はや</rt></ruby>く<ruby>寝<rt>ね</rt></ruby>なきゃ', k: '빨리 자야 해', a: '早く寝なきゃ', r: 'hayaku nenakya' },
+    { q: 'もう<ruby>帰<rt>かえ</rt></ruby>らなきゃ', k: '이제 돌아가야 해', a: 'もう帰らなきゃ', r: 'mou kaeranakya' },
+  ]},
+  // ~て (て형)
+  { section: 'て형', form: '연결', pattern: '~て (te)', example: '<ruby>食<rt>た</rt></ruby>べて<ruby>寝<rt>ね</rt></ruby>ます', exKr: '먹고 잔다', quiz: [
+    { q: '<ruby>朝<rt>あさ</rt></ruby>ごはんを<ruby>食<rt>た</rt></ruby>べて<ruby>学校<rt>がっこう</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます', k: '아침을 먹고 학교에 간다', a: '朝ごはんを食べて学校に行きます', r: 'asagohan wo tabete gakkou ni ikimasu' },
+    { q: '<ruby>手<rt>て</rt></ruby>を<ruby>洗<rt>あら</rt></ruby>って<ruby>食<rt>た</rt></ruby>べます', k: '손을 씻고 먹는다', a: '手を洗って食べます', r: 'te wo aratte tabemasu' },
+    { q: '<ruby>音楽<rt>おんがく</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いて<ruby>勉強<rt>べんきょう</rt></ruby>します', k: '음악을 듣고 공부한다', a: '音楽を聞いて勉強します', r: 'ongaku wo kiite benkyou shimasu' },
+  ]},
+  { section: 'て형', form: '순서', pattern: '~てから (te kara)', example: '<ruby>食<rt>た</rt></ruby>べてから<ruby>行<rt>い</rt></ruby>きます', exKr: '먹고 나서 간다', quiz: [
+    { q: '<ruby>宿題<rt>しゅくだい</rt></ruby>をしてから<ruby>遊<rt>あそ</rt></ruby>びます', k: '숙제를 하고 나서 논다', a: '宿題をしてから遊びます', r: 'shukudai wo shite kara asobimasu' },
+    { q: 'シャワーを<ruby>浴<rt>あ</rt></ruby>びてから<ruby>寝<rt>ね</rt></ruby>ます', k: '샤워를 하고 나서 잔다', a: 'シャワーを浴びてから寝ます', r: 'shawaa wo abite kara nemasu' },
+    { q: '<ruby>薬<rt>くすり</rt></ruby>を<ruby>飲<rt>の</rt></ruby>んでから<ruby>食<rt>た</rt></ruby>べます', k: '약을 먹고 나서 먹는다', a: '薬を飲んでから食べます', r: 'kusuri wo nonde kara tabemasu' },
+  ]},
+  { section: 'て형', form: '이동', pattern: '~てくる (te kuru)', example: '<ruby>買<rt>か</rt></ruby>ってきます', exKr: '사서 온다', quiz: [
+    { q: '<ruby>傘<rt>かさ</rt></ruby>を<ruby>持<rt>も</rt></ruby>ってきました', k: '우산을 가져왔다', a: '傘を持ってきました', r: 'kasa wo motte kimashita' },
+    { q: 'コーヒーを<ruby>買<rt>か</rt></ruby>ってきます', k: '커피를 사 올게요', a: 'コーヒーを買ってきます', r: 'koohii wo katte kimasu' },
+    { q: '<ruby>友達<rt>ともだち</rt></ruby>を<ruby>連<rt>つ</rt></ruby>れてきました', k: '친구를 데려왔다', a: '友達を連れてきました', r: 'tomodachi wo tsurete kimashita' },
+  ]},
+  { section: 'て형', form: '진행', pattern: '~ている (te iru)', example: '<ruby>食<rt>た</rt></ruby>べています', exKr: '먹고 있다', quiz: [
+    { q: '<ruby>今<rt>いま</rt></ruby><ruby>本<rt>ほん</rt></ruby>を<ruby>読<rt>よ</rt></ruby>んでいます', k: '지금 책을 읽고 있다', a: '今本を読んでいます', r: 'ima hon wo yonde imasu' },
+    { q: '<ruby>子供<rt>こども</rt></ruby>たちが<ruby>遊<rt>あそ</rt></ruby>んでいます', k: '아이들이 놀고 있다', a: '子供たちが遊んでいます', r: 'kodomotachi ga asonde imasu' },
+    { q: '<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っています', k: '비가 내리고 있다', a: '雨が降っています', r: 'ame ga futte imasu' },
+  ]},
+  { section: 'て형', form: '상태', pattern: '~ている (te iru)', example: '<ruby>結婚<rt>けっこん</rt></ruby>しています', exKr: '결혼해 있다', quiz: [
+    { q: '<ruby>窓<rt>まど</rt></ruby>が<ruby>開<rt>あ</rt></ruby>いています', k: '창문이 열려 있다', a: '窓が開いています', r: 'mado ga aite imasu' },
+    { q: '<ruby>電気<rt>でんき</rt></ruby>がついています', k: '전기가 켜져 있다', a: '電気がついています', r: 'denki ga tsuite imasu' },
+    { q: '<ruby>道<rt>みち</rt></ruby>が<ruby>混<rt>こ</rt></ruby>んでいます', k: '길이 막혀 있다', a: '道が混んでいます', r: 'michi ga konde imasu' },
+  ]},
+  { section: 'て형', form: '미완료', pattern: 'まだ~ていません', example: 'まだ<ruby>食<rt>た</rt></ruby>べていません', exKr: '아직 안 먹었다', quiz: [
+    { q: 'まだ<ruby>宿題<rt>しゅくだい</rt></ruby>をしていません', k: '아직 숙제를 안 했다', a: 'まだ宿題をしていません', r: 'mada shukudai wo shite imasen' },
+    { q: 'まだ<ruby>決<rt>き</rt></ruby>めていません', k: '아직 정하지 않았다', a: 'まだ決めていません', r: 'mada kimete imasen' },
+    { q: 'まだ<ruby>返事<rt>へんじ</rt></ruby>をしていません', k: '아직 답장을 안 했다', a: 'まだ返事をしていません', r: 'mada henji wo shite imasen' },
+  ]},
+  // 요청/허가
+  { section: '요청/허가', form: '요청', pattern: '~てください (te kudasai)', example: '<ruby>読<rt>よ</rt></ruby>んでください', exKr: '읽어 주세요', quiz: [
+    { q: 'ここに<ruby>名前<rt>なまえ</rt></ruby>を<ruby>書<rt>か</rt></ruby>いてください', k: '여기에 이름을 써 주세요', a: 'ここに名前を書いてください', r: 'koko ni namae wo kaite kudasai' },
+    { q: 'もう<ruby>一度<rt>いちど</rt></ruby><ruby>言<rt>い</rt></ruby>ってください', k: '한 번 더 말해 주세요', a: 'もう一度言ってください', r: 'mou ichido itte kudasai' },
+    { q: '<ruby>写真<rt>しゃしん</rt></ruby>を<ruby>撮<rt>と</rt></ruby>ってください', k: '사진을 찍어 주세요', a: '写真を撮ってください', r: 'shashin wo totte kudasai' },
+  ]},
+  { section: '요청/허가', form: '허락', pattern: '~てもいいです (te mo ii desu)', example: '<ruby>入<rt>はい</rt></ruby>ってもいいです', exKr: '들어가도 된다', quiz: [
+    { q: 'ここで<ruby>写真<rt>しゃしん</rt></ruby>を<ruby>撮<rt>と</rt></ruby>ってもいいですか', k: '여기서 사진을 찍어도 되나요', a: 'ここで写真を撮ってもいいですか', r: 'koko de shashin wo totte mo ii desu ka' },
+    { q: '<ruby>窓<rt>まど</rt></ruby>を<ruby>開<rt>あ</rt></ruby>けてもいいですか', k: '창문을 열어도 되나요', a: '窓を開けてもいいですか', r: 'mado wo akete mo ii desu ka' },
+    { q: 'エアコンをつけてもいいですか', k: '에어컨을 켜도 되나요', a: 'エアコンをつけてもいいですか', r: 'eakon wo tsukete mo ii desu ka' },
+  ]},
+  { section: '요청/허가', form: '금지', pattern: '~てはいけません (te wa ikemasen)', example: '<ruby>入<rt>はい</rt></ruby>ってはいけません', exKr: '들어가면 안 된다', quiz: [
+    { q: 'ここでタバコを<ruby>吸<rt>す</rt></ruby>ってはいけません', k: '여기서 담배를 피우면 안 된다', a: 'ここでタバコを吸ってはいけません', r: 'koko de tabako wo sutte wa ikemasen' },
+    { q: '<ruby>授業中<rt>じゅぎょうちゅう</rt></ruby>にスマホを<ruby>使<rt>つか</rt></ruby>ってはいけません', k: '수업 중에 스마트폰을 쓰면 안 된다', a: '授業中にスマホを使ってはいけません', r: 'jugyouchuu ni sumaho wo tsukatte wa ikemasen' },
+    { q: '<ruby>図書館<rt>としょかん</rt></ruby>で<ruby>食<rt>た</rt></ruby>べてはいけません', k: '도서관에서 먹으면 안 된다', a: '図書館で食べてはいけません', r: 'toshokan de tabete wa ikemasen' },
+  ]},
+  { section: '요청/허가', form: '금지요청', pattern: '~ないでください (nai de kudasai)', example: '<ruby>見<rt>み</rt></ruby>ないでください', exKr: '보지 마세요', quiz: [
+    { q: 'ここに<ruby>座<rt>すわ</rt></ruby>らないでください', k: '여기에 앉지 마세요', a: 'ここに座らないでください', r: 'koko ni suwaranai de kudasai' },
+    { q: '<ruby>写真<rt>しゃしん</rt></ruby>を<ruby>撮<rt>と</rt></ruby>らないでください', k: '사진을 찍지 마세요', a: '写真を撮らないでください', r: 'shashin wo toranai de kudasai' },
+    { q: '<ruby>心配<rt>しんぱい</rt></ruby>しないでください', k: '걱정하지 마세요', a: '心配しないでください', r: 'shinpai shinai de kudasai' },
+  ]},
+  // 권유/제안
+  { section: '권유/제안', form: '권유', pattern: '~ましょう (mashou)', example: '<ruby>行<rt>い</rt></ruby>きましょう', exKr: '가자', quiz: [
+    { q: '<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>食<rt>た</rt></ruby>べましょう', k: '같이 먹자', a: '一緒に食べましょう', r: 'issho ni tabemashou' },
+    { q: '<ruby>休<rt>やす</rt></ruby>みましょう', k: '쉬자', a: '休みましょう', r: 'yasumimashou' },
+    { q: '<ruby>始<rt>はじ</rt></ruby>めましょう', k: '시작하자', a: '始めましょう', r: 'hajimemashou' },
+  ]},
+  { section: '권유/제안', form: '제안', pattern: '~ましょうか (mashou ka)', example: '<ruby>手伝<rt>てつだ</rt></ruby>いましょうか', exKr: '도와줄까', quiz: [
+    { q: '<ruby>窓<rt>まど</rt></ruby>を<ruby>開<rt>あ</rt></ruby>けましょうか', k: '창문을 열까요', a: '窓を開けましょうか', r: 'mado wo akemashou ka' },
+    { q: '<ruby>荷物<rt>にもつ</rt></ruby>を<ruby>持<rt>も</rt></ruby>ちましょうか', k: '짐을 들까요', a: '荷物を持ちましょうか', r: 'nimotsu wo mochimashou ka' },
+    { q: '<ruby>電気<rt>でんき</rt></ruby>をつけましょうか', k: '전기를 켤까요', a: '電気をつけましょうか', r: 'denki wo tsukemashou ka' },
+  ]},
+  { section: '권유/제안', form: '권유(정중)', pattern: '~ませんか (masen ka)', example: '<ruby>行<rt>い</rt></ruby>きませんか', exKr: '가지 않을래요', quiz: [
+    { q: '<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>映画<rt>えいが</rt></ruby>を<ruby>見<rt>み</rt></ruby>ませんか', k: '같이 영화를 보지 않을래요', a: '一緒に映画を見ませんか', r: 'issho ni eiga wo mimasen ka' },
+    { q: 'お<ruby>茶<rt>ちゃ</rt></ruby>を<ruby>飲<rt>の</rt></ruby>みませんか', k: '차를 마시지 않을래요', a: 'お茶を飲みませんか', r: 'ocha wo nomimasen ka' },
+    { q: '<ruby>散歩<rt>さんぽ</rt></ruby>しませんか', k: '산책하지 않을래요', a: '散歩しませんか', r: 'sanpo shimasen ka' },
+  ]},
+  // 목적/선호
+  { section: '목적/선호', form: '목적', pattern: 'stem + に行く (ni iku)', example: '<ruby>食<rt>た</rt></ruby>べに<ruby>行<rt>い</rt></ruby>きます', exKr: '먹으러 간다', quiz: [
+    { q: '<ruby>映画<rt>えいが</rt></ruby>を<ruby>見<rt>み</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます', k: '영화를 보러 간다', a: '映画を見に行きます', r: 'eiga wo mi ni ikimasu' },
+    { q: '<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>に<ruby>行<rt>い</rt></ruby>きます', k: '쇼핑하러 간다', a: '買い物に行きます', r: 'kaimono ni ikimasu' },
+    { q: '<ruby>友達<rt>ともだち</rt></ruby>に<ruby>会<rt>あ</rt></ruby>いに<ruby>行<rt>い</rt></ruby>きます', k: '친구를 만나러 간다', a: '友達に会いに行きます', r: 'tomodachi ni ai ni ikimasu' },
+  ]},
+  { section: '목적/선호', form: '선호', pattern: '~のが好き (no ga suki)', example: '<ruby>勉強<rt>べんきょう</rt></ruby>するのが<ruby>好<rt>す</rt></ruby>きです', exKr: '공부하는 걸 좋아한다', quiz: [
+    { q: '<ruby>音楽<rt>おんがく</rt></ruby>を<ruby>聞<rt>き</rt></ruby>くのが<ruby>好<rt>す</rt></ruby>きです', k: '음악 듣는 걸 좋아한다', a: '音楽を聞くのが好きです', r: 'ongaku wo kiku no ga suki desu' },
+    { q: '<ruby>料理<rt>りょうり</rt></ruby>するのが<ruby>好<rt>す</rt></ruby>きです', k: '요리하는 걸 좋아한다', a: '料理するのが好きです', r: 'ryouri suru no ga suki desu' },
+    { q: '<ruby>旅行<rt>りょこう</rt></ruby>するのが<ruby>好<rt>す</rt></ruby>きです', k: '여행하는 걸 좋아한다', a: '旅行するのが好きです', r: 'ryokou suru no ga suki desu' },
+  ]},
+  { section: '목적/선호', form: '능력', pattern: '~のが上手 (no ga jouzu)', example: '<ruby>料理<rt>りょうり</rt></ruby>するのが<ruby>上手<rt>じょうず</rt></ruby>です', exKr: '요리를 잘한다', quiz: [
+    { q: '<ruby>絵<rt>え</rt></ruby>を<ruby>描<rt>か</rt></ruby>くのが<ruby>上手<rt>じょうず</rt></ruby>です', k: '그림을 잘 그린다', a: '絵を描くのが上手です', r: 'e wo kaku no ga jouzu desu' },
+    { q: '<ruby>歌<rt>うた</rt></ruby>を<ruby>歌<rt>うた</rt></ruby>うのが<ruby>上手<rt>じょうず</rt></ruby>です', k: '노래를 잘 부른다', a: '歌を歌うのが上手です', r: 'uta wo utau no ga jouzu desu' },
+    { q: '<ruby>日本語<rt>にほんご</rt></ruby>を<ruby>話<rt>はな</rt></ruby>すのが<ruby>上手<rt>じょうず</rt></ruby>です', k: '일본어를 잘한다', a: '日本語を話すのが上手です', r: 'nihongo wo hanasu no ga jouzu desu' },
+  ]},
+  // 보통형
+  { section: '보통형', form: '기본형', pattern: '辞書形 (jisho kei)', example: '<ruby>食<rt>た</rt></ruby>べる', exKr: '먹다', quiz: [
+    { q: '<ruby>毎日<rt>まいにち</rt></ruby><ruby>運動<rt>うんどう</rt></ruby>する', k: '매일 운동한다', a: '毎日運動する', r: 'mainichi undou suru' },
+    { q: '<ruby>朝<rt>あさ</rt></ruby><ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きる', k: '아침 일찍 일어난다', a: '朝早く起きる', r: 'asa hayaku okiru' },
+    { q: '<ruby>友達<rt>ともだち</rt></ruby>に<ruby>会<rt>あ</rt></ruby>う', k: '친구를 만난다', a: '友達に会う', r: 'tomodachi ni au' },
+  ]},
+  { section: '보통형', form: '부정형', pattern: '~ない (nai)', example: '<ruby>食<rt>た</rt></ruby>べない', exKr: '먹지 않는다', quiz: [
+    { q: '<ruby>今日<rt>きょう</rt></ruby>は<ruby>出<rt>で</rt></ruby>かけない', k: '오늘은 나가지 않는다', a: '今日は出かけない', r: 'kyou wa dekakenai' },
+    { q: 'あまり<ruby>甘<rt>あま</rt></ruby>いものを<ruby>食<rt>た</rt></ruby>べない', k: '달콤한 것을 별로 안 먹는다', a: 'あまり甘いものを食べない', r: 'amari amai mono wo tabenai' },
+    { q: '<ruby>嘘<rt>うそ</rt></ruby>をつかない', k: '거짓말을 안 한다', a: '嘘をつかない', r: 'uso wo tsukanai' },
+  ]},
+  // 인용
+  { section: '인용', form: '생각', pattern: '~と思います (to omoimasu)', example: '<ruby>行<rt>い</rt></ruby>くと<ruby>思<rt>おも</rt></ruby>います', exKr: '갈 것 같다', quiz: [
+    { q: '<ruby>明日<rt>あした</rt></ruby>は<ruby>雨<rt>あめ</rt></ruby>だと<ruby>思<rt>おも</rt></ruby>います', k: '내일은 비일 것 같다', a: '明日は雨だと思います', r: 'ashita wa ame da to omoimasu' },
+    { q: 'この<ruby>映画<rt>えいが</rt></ruby>はおもしろいと<ruby>思<rt>おも</rt></ruby>います', k: '이 영화는 재미있을 것 같다', a: 'この映画はおもしろいと思います', r: 'kono eiga wa omoshiroi to omoimasu' },
+    { q: '<ruby>彼<rt>かれ</rt></ruby>は<ruby>来<rt>こ</rt></ruby>ないと<ruby>思<rt>おも</rt></ruby>います', k: '그는 안 올 것 같다', a: '彼は来ないと思います', r: 'kare wa konai to omoimasu' },
+  ]},
+  { section: '인용', form: '전달', pattern: '~と言っていました (to itte imashita)', example: '<ruby>来<rt>く</rt></ruby>ると<ruby>言<rt>い</rt></ruby>っていました', exKr: '온다고 했다', quiz: [
+    { q: '<ruby>先生<rt>せんせい</rt></ruby>が<ruby>明日<rt>あした</rt></ruby>テストがあると<ruby>言<rt>い</rt></ruby>っていました', k: '선생님이 내일 시험이 있다고 했다', a: '先生が明日テストがあると言っていました', r: 'sensei ga ashita tesuto ga aru to itte imashita' },
+    { q: '<ruby>田中<rt>たなか</rt></ruby>さんは<ruby>忙<rt>いそが</rt></ruby>しいと<ruby>言<rt>い</rt></ruby>っていました', k: '다나카 씨는 바쁘다고 했다', a: '田中さんは忙しいと言っていました', r: 'tanaka san wa isogashii to itte imashita' },
+    { q: '<ruby>母<rt>はは</rt></ruby>が<ruby>早<rt>はや</rt></ruby>く<ruby>帰<rt>かえ</rt></ruby>ってと<ruby>言<rt>い</rt></ruby>っていました', k: '어머니가 빨리 돌아오라고 했다', a: '母が早く帰ってと言っていました', r: 'haha ga hayaku kaette to itte imashita' },
+  ]},
+  // 불특정
+  { section: '불특정', form: 'something', pattern: '何か (nanika)', example: '<ruby>何<rt>なに</rt></ruby>か<ruby>食<rt>た</rt></ruby>べます', exKr: '뭐 먹을까', quiz: [
+    { q: '<ruby>何<rt>なに</rt></ruby>か<ruby>飲<rt>の</rt></ruby>みますか', k: '뭐 마실래요', a: '何か飲みますか', r: 'nanika nomimasu ka' },
+    { q: '<ruby>何<rt>なに</rt></ruby>かいいことがありましたか', k: '뭔가 좋은 일이 있었나요', a: '何かいいことがありましたか', r: 'nanika ii koto ga arimashita ka' },
+    { q: '<ruby>何<rt>なに</rt></ruby>か<ruby>手伝<rt>てつだ</rt></ruby>いましょうか', k: '뭐 도와줄까요', a: '何か手伝いましょうか', r: 'nanika tetudaimashou ka' },
+  ]},
+  { section: '불특정', form: 'nothing', pattern: '何も~ない (nanimo~nai)', example: '<ruby>何<rt>なに</rt></ruby>も<ruby>食<rt>た</rt></ruby>べません', exKr: '아무것도 안 먹는다', quiz: [
+    { q: '<ruby>何<rt>なに</rt></ruby>も<ruby>聞<rt>き</rt></ruby>こえません', k: '아무것도 안 들린다', a: '何も聞こえません', r: 'nanimo kikoemasen' },
+    { q: '<ruby>何<rt>なに</rt></ruby>も<ruby>買<rt>か</rt></ruby>いませんでした', k: '아무것도 안 샀다', a: '何も買いませんでした', r: 'nanimo kaimasen deshita' },
+    { q: '<ruby>冷蔵庫<rt>れいぞうこ</rt></ruby>に<ruby>何<rt>なに</rt></ruby>もありません', k: '냉장고에 아무것도 없다', a: '冷蔵庫に何もありません', r: 'reizouko ni nanimo arimasen' },
+  ]},
+  { section: '불특정', form: 'someone', pattern: 'だれか (dareka)', example: 'だれか<ruby>来<rt>き</rt></ruby>ました', exKr: '누가 왔다', quiz: [
+    { q: 'だれか<ruby>手伝<rt>てつだ</rt></ruby>ってください', k: '누가 도와주세요', a: 'だれか手伝ってください', r: 'dareka tetsudatte kudasai' },
+    { q: 'だれか<ruby>知<rt>し</rt></ruby>っていますか', k: '누가 알고 있나요', a: 'だれか知っていますか', r: 'dareka shitte imasu ka' },
+    { q: 'だれかいますか', k: '누가 있나요', a: 'だれかいますか', r: 'dareka imasu ka' },
+  ]},
+  { section: '불특정', form: 'no one', pattern: 'だれも~ない (daremo~nai)', example: 'だれも<ruby>来<rt>き</rt></ruby>ません', exKr: '아무도 안 온다', quiz: [
+    { q: 'だれも<ruby>知<rt>し</rt></ruby>りません', k: '아무도 모른다', a: 'だれも知りません', r: 'daremo shirimasen' },
+    { q: '<ruby>教室<rt>きょうしつ</rt></ruby>にだれもいません', k: '교실에 아무도 없다', a: '教室にだれもいません', r: 'kyoushitsu ni daremo imasen' },
+    { q: 'だれも<ruby>答<rt>こた</rt></ruby>えませんでした', k: '아무도 대답하지 않았다', a: 'だれも答えませんでした', r: 'daremo kotaemasen deshita' },
+  ]},
+  { section: '불특정', form: 'somewhere', pattern: 'どこか (dokoka)', example: 'どこか<ruby>行<rt>い</rt></ruby>きたい', exKr: '어디 가고 싶다', quiz: [
+    { q: 'どこか<ruby>静<rt>しず</rt></ruby>かな<ruby>所<rt>ところ</rt></ruby>に<ruby>行<rt>い</rt></ruby>きたい', k: '어디 조용한 곳에 가고 싶다', a: 'どこか静かな所に行きたい', r: 'dokoka shizuka na tokoro ni ikitai' },
+    { q: 'どこかでごはんを<ruby>食<rt>た</rt></ruby>べましょう', k: '어디선가 밥을 먹자', a: 'どこかでごはんを食べましょう', r: 'dokoka de gohan wo tabemashou' },
+    { q: '<ruby>鍵<rt>かぎ</rt></ruby>をどこかに<ruby>置<rt>お</rt></ruby>きました', k: '열쇠를 어딘가에 두었다', a: '鍵をどこかに置きました', r: 'kagi wo dokoka ni okimashita' },
+  ]},
+  { section: '불특정', form: 'nowhere', pattern: 'どこにも~ない (dokonimo~nai)', example: 'どこにも<ruby>行<rt>い</rt></ruby>かない', exKr: '어디도 안 간다', quiz: [
+    { q: '<ruby>財布<rt>さいふ</rt></ruby>がどこにもありません', k: '지갑이 어디에도 없다', a: '財布がどこにもありません', r: 'saifu ga dokonimo arimasen' },
+    { q: '<ruby>今日<rt>きょう</rt></ruby>はどこにも<ruby>行<rt>い</rt></ruby>きません', k: '오늘은 어디도 안 간다', a: '今日はどこにも行きません', r: 'kyou wa dokonimo ikimasen' },
+    { q: 'どこにも<ruby>売<rt>う</rt></ruby>っていません', k: '어디에도 안 팔고 있다', a: 'どこにも売っていません', r: 'dokonimo utte imasen' },
+  ]},
+  // 빈도
+  { section: '빈도', form: '자주', pattern: 'よく (yoku)', example: 'よく<ruby>行<rt>い</rt></ruby>きます', exKr: '자주 간다', quiz: [
+    { q: 'よく<ruby>日本語<rt>にほんご</rt></ruby>の<ruby>映画<rt>えいが</rt></ruby>を<ruby>見<rt>み</rt></ruby>ます', k: '자주 일본어 영화를 본다', a: 'よく日本語の映画を見ます', r: 'yoku nihongo no eiga wo mimasu' },
+    { q: 'よくこの<ruby>店<rt>みせ</rt></ruby>に<ruby>来<rt>き</rt></ruby>ます', k: '자주 이 가게에 온다', a: 'よくこの店に来ます', r: 'yoku kono mise ni kimasu' },
+    { q: 'よく<ruby>友達<rt>ともだち</rt></ruby>と<ruby>電話<rt>でんわ</rt></ruby>します', k: '자주 친구와 전화한다', a: 'よく友達と電話します', r: 'yoku tomodachi to denwa shimasu' },
+  ]},
+  { section: '빈도', form: '가끔', pattern: 'ときどき (tokidoki)', example: 'ときどき<ruby>行<rt>い</rt></ruby>きます', exKr: '가끔 간다', quiz: [
+    { q: 'ときどき<ruby>外食<rt>がいしょく</rt></ruby>します', k: '가끔 외식한다', a: 'ときどき外食します', r: 'tokidoki gaishoku shimasu' },
+    { q: 'ときどき<ruby>公園<rt>こうえん</rt></ruby>を<ruby>散歩<rt>さんぽ</rt></ruby>します', k: '가끔 공원을 산책한다', a: 'ときどき公園を散歩します', r: 'tokidoki kouen wo sanpo shimasu' },
+    { q: 'ときどき<ruby>遅刻<rt>ちこく</rt></ruby>します', k: '가끔 지각한다', a: 'ときどき遅刻します', r: 'tokidoki chikoku shimasu' },
+  ]},
+  { section: '빈도', form: '별로', pattern: 'あまり~ない (amari~nai)', example: 'あまり<ruby>行<rt>い</rt></ruby>きません', exKr: '별로 안 간다', quiz: [
+    { q: 'あまり<ruby>甘<rt>あま</rt></ruby>いものを<ruby>食<rt>た</rt></ruby>べません', k: '별로 달콤한 것을 안 먹는다', a: 'あまり甘いものを食べません', r: 'amari amai mono wo tabemasen' },
+    { q: 'あまりテレビを<ruby>見<rt>み</rt></ruby>ません', k: '별로 텔레비전을 안 본다', a: 'あまりテレビを見ません', r: 'amari terebi wo mimasen' },
+    { q: 'あまり<ruby>運動<rt>うんどう</rt></ruby>しません', k: '별로 운동을 안 한다', a: 'あまり運動しません', r: 'amari undou shimasen' },
+  ]},
+  { section: '빈도', form: '전혀', pattern: 'ぜんぜん~ない (zenzen~nai)', example: 'ぜんぜん<ruby>行<rt>い</rt></ruby>きません', exKr: '전혀 안 간다', quiz: [
+    { q: 'ぜんぜん<ruby>分<rt>わ</rt></ruby>かりません', k: '전혀 모르겠다', a: 'ぜんぜん分かりません', r: 'zenzen wakarimasen' },
+    { q: 'ぜんぜん<ruby>眠<rt>ねむ</rt></ruby>くないです', k: '전혀 안 졸리다', a: 'ぜんぜん眠くないです', r: 'zenzen nemuku nai desu' },
+    { q: 'ぜんぜん<ruby>痛<rt>いた</rt></ruby>くないです', k: '전혀 안 아프다', a: 'ぜんぜん痛くないです', r: 'zenzen itaku nai desu' },
+  ]},
+  // 시간
+  { section: '시간', form: '기간', pattern: '~時間 (jikan)', example: '<ruby>三<rt>さん</rt></ruby><ruby>時間<rt>じかん</rt></ruby><ruby>勉強<rt>べんきょう</rt></ruby>しました', exKr: '3시간 공부했다', quiz: [
+    { q: '<ruby>毎日<rt>まいにち</rt></ruby><ruby>二<rt>に</rt></ruby><ruby>時間<rt>じかん</rt></ruby><ruby>運動<rt>うんどう</rt></ruby>します', k: '매일 2시간 운동한다', a: '毎日二時間運動します', r: 'mainichi ni jikan undou shimasu' },
+    { q: '<ruby>一<rt>いち</rt></ruby><ruby>時間<rt>じかん</rt></ruby><ruby>待<rt>ま</rt></ruby>ちました', k: '1시간 기다렸다', a: '一時間待ちました', r: 'ichi jikan machimashita' },
+    { q: '<ruby>五<rt>ご</rt></ruby><ruby>時間<rt>じかん</rt></ruby><ruby>寝<rt>ね</rt></ruby>ました', k: '5시간 잤다', a: '五時間寝ました', r: 'go jikan nemashita' },
+  ]},
+  // 완곡
+  { section: '완곡', form: '완곡(が)', pattern: '~が (ga)', example: '<ruby>行<rt>い</rt></ruby>きたいですが...', exKr: '가고 싶은데...', quiz: [
+    { q: 'すみませんが、<ruby>道<rt>みち</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えてください', k: '죄송한데, 길을 알려주세요', a: 'すみませんが、道を教えてください', r: 'sumimasen ga, michi wo oshiete kudasai' },
+    { q: '<ruby>聞<rt>き</rt></ruby>きたいことがありますが...', k: '물어보고 싶은 게 있는데...', a: '聞きたいことがありますが...', r: 'kikitai koto ga arimasu ga...' },
+    { q: 'ちょっとお<ruby>願<rt>ねが</rt></ruby>いがありますが...', k: '좀 부탁이 있는데...', a: 'ちょっとお願いがありますが...', r: 'chotto onegai ga arimasu ga...' },
+  ]},
+  { section: '완곡', form: '완곡(けど)', pattern: '~けど (kedo)', example: '<ruby>行<rt>い</rt></ruby>きたいけど...', exKr: '가고 싶은데...', quiz: [
+    { q: '<ruby>明日<rt>あした</rt></ruby>は<ruby>忙<rt>いそが</rt></ruby>しいけど、<ruby>大丈夫<rt>だいじょうぶ</rt></ruby>です', k: '내일은 바쁘지만, 괜찮아요', a: '明日は忙しいけど、大丈夫です', r: 'ashita wa isogashii kedo, daijoubu desu' },
+    { q: '<ruby>高<rt>たか</rt></ruby>いけど、<ruby>買<rt>か</rt></ruby>います', k: '비싸지만, 산다', a: '高いけど、買います', r: 'takai kedo, kaimasu' },
+    { q: '<ruby>難<rt>むずか</rt></ruby>しいけど、<ruby>頑張<rt>がんば</rt></ruby>ります', k: '어렵지만, 열심히 하겠다', a: '難しいけど、頑張ります', r: 'muzukashii kedo, ganbarimasu' },
+  ]},
+];
+
 // ===== TABS =====
 function switchTab(tab) {
   document.querySelectorAll('.tab').forEach((t, i) => {
@@ -862,11 +1175,34 @@ function renderRefTables() {
     return html;
   }
 
-  function makeStructureTable(data, title) {
+  function makeConjugationTable(data, title) {
+    const tenses = ['현재', '과거'];
     let html = '<div class="ref-section"><h2>' + title + '</h2>';
-    html += '<table class="ref-table"><thead><tr><th>형태</th><th>패턴</th><th>예문</th><th>직역</th></tr></thead><tbody>';
+    html += '<table class="ref-table"><thead><tr><th>시제</th><th>긍정 (+)</th><th>부정 (−)</th></tr></thead><tbody>';
+    for (const t of tenses) {
+      const pos = data.find(d => d.form === t + ' 긍정');
+      const neg = data.find(d => d.form === t + ' 부정');
+      if (pos && neg) {
+        html += '<tr><td>' + t + '</td><td class="particle-cell">' + pos.pattern + '</td><td class="particle-cell">' + neg.pattern + '</td></tr>';
+      }
+    }
+    html += '</tbody></table>';
+    const pos0 = data.find(d => d.form === '현재 긍정');
+    const neg0 = data.find(d => d.form === '현재 부정');
+    if (pos0) {
+      html += '<div class="conj-examples">' + pos0.example + ' → ' + pos0.exKr;
+      if (neg0) html += '<br>' + neg0.example + ' → ' + neg0.exKr;
+      html += '</div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function makeGrammarTable(data, title) {
+    let html = '<div class="ref-section"><h2>' + title + '</h2>';
+    html += '<table class="ref-table"><thead><tr><th>형태</th><th>핵심 패턴</th><th>예문</th><th>직역</th></tr></thead><tbody>';
     for (const d of data) {
-      html += '<tr><td>' + d.form + '</td><td class="particle-cell">' + d.pattern + '</td><td class="example-cell">' + d.example + '</td><td class="translation-cell">' + d.exKr + '</td></tr>';
+      html += '<tr><td>' + d.form + '</td><td class="particle-cell" style="font-size:0.75rem">' + d.pattern + '</td><td class="example-cell">' + d.example + '</td><td class="translation-cell">' + d.exKr + '</td></tr>';
     }
     html += '</tbody></table></div>';
     return html;
@@ -874,12 +1210,50 @@ function renderRefTables() {
 
   let left = '';
   left += makeParticleTable(particlesData, '기본 조사 (Basic Particles)');
+  left += makeConjugationTable(structuresData.filter(s => s.category === 'noun'), '1. 명사 & な형용사 (Desu グループ / です形)');
+  left += makeConjugationTable(structuresData.filter(s => s.category === 'i-adj'), '2. い형용사 (い-adj 변화)');
+  left += makeConjugationTable(structuresData.filter(s => s.category === 'verb'), '3. 동사 (ます グループ / ます形)');
 
   let right = '';
   right += makeParticleTable(endingsData, '종조사 (Sentence-ending Particles)');
-  right += makeStructureTable(structuresData.filter(s => s.category === 'noun'), '명사/な형용사 (Noun/な-adj)');
-  right += makeStructureTable(structuresData.filter(s => s.category === 'i-adj'), 'い형용사 (い-adj)');
-  right += makeStructureTable(structuresData.filter(s => s.category === 'verb'), '동사 ます형 (Verb ます)');
+
+  // Grammar patterns grouped by section
+  const sections = [];
+  const sectionMap = {};
+  for (const g of grammarData) {
+    if (!sectionMap[g.section]) {
+      sectionMap[g.section] = [];
+      sections.push(g.section);
+    }
+    sectionMap[g.section].push(g);
+  }
+  const sectionTitles = {
+    '비교': '~より / ~のほうが (비교)',
+    '~の': '~の (것/소유)',
+    '계획': '~つもり (계획)',
+    '변화': '~くなる / ~になる (변화)',
+    '희망': '~たい / ~たがる (희망)',
+    '나열': '~たり~たり (이것저것)',
+    '경험': '~ことがある (경험)',
+    '과도': '~すぎる (너무)',
+    '추천': '~ほうがいい (추천)',
+    '설명': '~んです (설명톤)',
+    '추측': '~でしょう (추측)',
+    '의무': '~なければいけません (해야 함)',
+    'て형': '~て / ~てから / ~ている (て형)',
+    '요청/허가': '~てください / ~てもいい / ~てはいけません',
+    '권유/제안': '~ましょう / ~ませんか (권유)',
+    '목적/선호': '~に行く / ~のが好き (목적/선호)',
+    '보통형': '辞書形 / ~ない (보통형)',
+    '인용': '~と思います / ~と言っていました (인용)',
+    '불특정': '何か / だれか / どこか (불특정 표현)',
+    '빈도': 'よく / ときどき / あまり~ない (빈도)',
+    '시간': '~時間 (기간)',
+    '완곡': '~が / ~けど (완곡 표현)',
+  };
+  for (const sec of sections) {
+    right += makeGrammarTable(sectionMap[sec], sectionTitles[sec] || sec);
+  }
 
   container.innerHTML = '<div class="ref-col-left">' + left + '</div><div class="ref-col-right">' + right + '</div>';
 }
@@ -933,6 +1307,23 @@ function fisherYates(arr) {
   return a;
 }
 
+function expandQuiz(data, type, source) {
+  const items = [];
+  data.forEach(d => {
+    if (d.quiz && d.quiz.length) {
+      d.quiz.forEach(qe => {
+        const expanded = Object.assign({}, d, { qEx: qe.q, qKr: qe.k });
+        if (qe.a) expanded.answer = qe.a;
+        if (qe.r) expanded.romaji = qe.r;
+        items.push({ type, source, data: expanded });
+      });
+    } else {
+      items.push({ type, source, data });
+    }
+  });
+  return items;
+}
+
 function getQuizPool() {
   const pool = [];
   const qtype = settings.qtype;
@@ -940,26 +1331,31 @@ function getQuizPool() {
 
   if (qtype === 'fillin' || qtype === 'both') {
     if (scope === 'all' || scope === 'particles') {
-      particlesData.forEach(d => pool.push({ type: 'fillin', source: 'particles', data: d }));
+      pool.push(...expandQuiz(particlesData, 'fillin', 'particles'));
     }
     if (scope === 'all' || scope === 'endings') {
-      endingsData.forEach(d => pool.push({ type: 'fillin', source: 'endings', data: d }));
+      pool.push(...expandQuiz(endingsData, 'fillin', 'endings'));
     }
   }
   if (qtype === 'translate' || qtype === 'both') {
     if (scope === 'all' || scope === 'particles') {
-      particlesData.forEach(d => pool.push({ type: 'translate', source: 'particles', data: d }));
+      pool.push(...expandQuiz(particlesData, 'translate', 'particles'));
     }
     if (scope === 'all' || scope === 'endings') {
-      endingsData.forEach(d => pool.push({ type: 'translate', source: 'endings', data: d }));
+      pool.push(...expandQuiz(endingsData, 'translate', 'endings'));
     }
     if (scope === 'all' || scope === 'structures') {
-      structuresData.forEach(d => pool.push({ type: 'translate', source: 'structures', data: d }));
+      pool.push(...expandQuiz(structuresData, 'translate', 'structures'));
+    }
+    if (scope === 'all' || scope === 'grammar') {
+      pool.push(...expandQuiz(grammarData, 'translate', 'grammar'));
     }
   }
   if (qtype === 'fillin' && (scope === 'all' || scope === 'structures')) {
-    // structures don't have fill-in, add as translate
-    structuresData.forEach(d => pool.push({ type: 'translate', source: 'structures', data: d }));
+    pool.push(...expandQuiz(structuresData, 'translate', 'structures'));
+  }
+  if (qtype === 'fillin' && (scope === 'all' || scope === 'grammar')) {
+    pool.push(...expandQuiz(grammarData, 'translate', 'grammar'));
   }
   return pool;
 }
@@ -1094,14 +1490,14 @@ function getExplanation(q, chosen) {
   if (q.type === 'fillin') {
     return d.particle + ' (' + d.korean + ') = ' + d.desc + '. ' + kr;
   }
-  if (q.source === 'structures') {
+  if (q.source === 'structures' || q.source === 'grammar') {
     return d.pattern + ' = ' + d.form + '. ' + kr;
   }
   return d.particle + ' (' + d.korean + ') = ' + d.desc + '. ' + kr;
 }
 
 function getRomaji(q) {
-  if (q.source === 'structures' && q.data.romaji) return q.data.romaji;
+  if ((q.source === 'structures' || q.source === 'grammar') && q.data.romaji) return q.data.romaji;
   // Build romaji from example by stripping to plain text
   const plain = q.data.example.replace(/<ruby>([^<]*)<rt>[^<]*<\/rt><\/ruby>/g, '$1').replace(/<[^>]+>/g, '');
   return plain;
@@ -1117,7 +1513,7 @@ function showFeedback(passed, q, chosen) {
     nextBtn.style.display = 'inline-block';
   } else {
     let html = q.data.qEx || q.data.example;
-    if (q.source === 'structures' && q.data.romaji) {
+    if ((q.source === 'structures' || q.source === 'grammar') && q.data.romaji) {
       html += '<span class="romaji-hint">' + q.data.romaji + '</span>';
     }
     html += '<span class="explanation">' + getExplanation(q, chosen) + '</span>';
@@ -1182,7 +1578,7 @@ function checkTranslation() {
   const q = quizQuestions[quizIndex];
   let correctText, correctDisplay;
 
-  if (q.source === 'structures') {
+  if (q.source === 'structures' || q.source === 'grammar') {
     correctText = q.data.answer;
     correctDisplay = q.data.qEx || q.data.example;
   } else {
@@ -1194,7 +1590,7 @@ function checkTranslation() {
   const normalize = s => s.replace(/\s+/g, '').replace(/[。、！？]/g, '');
   let passed = normalize(answer) === normalize(correctText);
 
-  if (!passed && settings.romaji === 'on' && q.source === 'structures') {
+  if (!passed && settings.romaji === 'on' && (q.source === 'structures' || q.source === 'grammar')) {
     const romajiNorm = normalize(q.data.romaji.toLowerCase());
     passed = normalize(answer.toLowerCase()) === romajiNorm;
   }
